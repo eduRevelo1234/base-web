@@ -15,8 +15,8 @@ const C = {
   goldHi:    "#f0ad00",
   brown:     "#231806",
   cream:     "#f4ecdc",
-  muted:     "rgba(244,236,220,0.45)",
-  muted2:    "rgba(244,236,220,0.22)",
+  muted:     "rgba(244,236,220,0.65)",
+  muted2:    "rgba(244,236,220,0.35)",
   border:    "rgba(223,159,0,0.12)",
   borderHi:  "rgba(223,159,0,0.32)",
   goldDim:   "rgba(223,159,0,0.08)",
@@ -356,7 +356,7 @@ function Hero() {
         {/* Tagline */}
         <p style={{
           fontFamily: B, fontSize: isMobile ? 15 : 17, lineHeight: 1.75,
-          color: C.muted, maxWidth: 460, marginBottom: 44,
+          color: "rgba(244,236,220,0.78)", maxWidth: 460, marginBottom: 44,
         }}>
           BASE es un venue para conciertos, fiestas y eventos privados
           en Quito. Capacidad para 402 personas, sonido profesional
@@ -404,21 +404,6 @@ function Hero() {
         </div>
       </div>
 
-      {/* Scroll hint */}
-      <div style={{
-        position: "absolute", bottom: 28, left: "50%", transform: "translateX(-50%)",
-        display: "flex", flexDirection: "column", alignItems: "center", gap: 8, zIndex: 1,
-      }}>
-        <span style={{
-          fontFamily: H, fontWeight: 700, fontSize: 10,
-          letterSpacing: "0.24em", textTransform: "uppercase",
-          color: C.muted, opacity: 0.5,
-        }}>Scroll</span>
-        <div style={{
-          width: 1, height: 40,
-          background: `linear-gradient(to bottom, ${C.gold}, transparent)`,
-        }} />
-      </div>
     </section>
   );
 }
@@ -998,17 +983,18 @@ function RadioRow({
 
 /* ════════════════════════════ GALLERY CARD ════════════════════════════ */
 function GalleryCard({
-  img, tall, onOpen, contained,
+  img, idx, tall, onOpen, contained,
 }: {
   img: { src: string; alt: string; label: string };
+  idx: number;
   tall?: boolean;
   contained?: boolean;
-  onOpen: (src: string) => void;
+  onOpen: (i: number) => void;
 }) {
   const [hov, setHov] = useState(false);
   return (
     <div
-      onClick={() => onOpen(img.src)}
+      onClick={() => onOpen(idx)}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
@@ -1063,7 +1049,7 @@ function GalleryCard({
 
 /* ════════════════════════════ GALLERY ════════════════════════════ */
 function Gallery() {
-  const [lightbox, setLightbox] = useState<string | null>(null);
+  const [lbIndex, setLbIndex] = useState<number | null>(null);
   const { isMobile, isTablet } = useBreakpoint();
   const ref = useReveal(0);
 
@@ -1076,7 +1062,11 @@ function Gallery() {
   ];
 
   useEffect(() => {
-    const fn = (e: KeyboardEvent) => { if (e.key === "Escape") setLightbox(null); };
+    const fn = (e: KeyboardEvent) => {
+      if (e.key === "Escape")     setLbIndex(null);
+      if (e.key === "ArrowRight") setLbIndex(i => i !== null ? (i + 1) % IMGS.length : null);
+      if (e.key === "ArrowLeft")  setLbIndex(i => i !== null ? (i - 1 + IMGS.length) % IMGS.length : null);
+    };
     window.addEventListener("keydown", fn);
     return () => window.removeEventListener("keydown", fn);
   }, []);
@@ -1103,15 +1093,15 @@ function Gallery() {
           gap: 3,
         }}>
           {/* Foto 1 — fachada, ocupa 2 filas en desktop */}
-          <GalleryCard img={IMGS[0]} tall={!isMobile && !isTablet} onOpen={setLightbox} />
+          <GalleryCard img={IMGS[0]} idx={0} tall={!isMobile && !isTablet} onOpen={setLbIndex} />
           {/* Foto 2 — pantalla LED */}
-          <GalleryCard img={IMGS[1]} onOpen={setLightbox} />
+          <GalleryCard img={IMGS[1]} idx={1} onOpen={setLbIndex} />
           {/* Foto 3 — logo edificio */}
-          <GalleryCard img={IMGS[2]} onOpen={setLightbox} />
+          <GalleryCard img={IMGS[2]} idx={2} onOpen={setLbIndex} />
           {/* Foto 4 — flyer evento */}
-          <GalleryCard img={IMGS[3]} onOpen={setLightbox} />
+          <GalleryCard img={IMGS[3]} idx={3} onOpen={setLbIndex} />
           {/* Foto 5 — cumbia */}
-          <GalleryCard img={IMGS[4]} onOpen={setLightbox} contained />
+          <GalleryCard img={IMGS[4]} idx={4} onOpen={setLbIndex} contained />
         </div>
 
         <p style={{
@@ -1126,40 +1116,89 @@ function Gallery() {
         </p>
       </div>
 
-      {/* Lightbox */}
-      {lightbox && (
-        <div
-          onClick={() => setLightbox(null)}
-          style={{
-            position: "fixed", inset: 0, zIndex: 600,
-            backgroundColor: "rgba(0,0,0,0.92)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: 24, animation: "fadeIn 0.2s ease",
-            cursor: "zoom-out",
-          }}
-        >
-          <div style={{ position: "relative", maxWidth: 900, width: "100%", maxHeight: "90dvh" }}>
-            <Image
-              src={lightbox}
-              alt="Foto ampliada"
-              width={900} height={600}
-              style={{ objectFit: "contain", width: "100%", height: "auto", maxHeight: "90dvh", display: "block" }}
-            />
-            <button
-              onClick={(e) => { e.stopPropagation(); setLightbox(null); }}
-              style={{
-                position: "absolute", top: 0, left: 0, zIndex: 10,
-                width: 32, height: 32,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                backgroundColor: "rgba(17,17,17,0.75)",
-                color: C.cream, fontSize: 14,
-                border: "none", cursor: "pointer", padding: 0,
-              }}
-              aria-label="Cerrar"
-            >✕</button>
+      {/* Lightbox carrusel */}
+      {lbIndex !== null && (() => {
+        const cur  = IMGS[lbIndex];
+        const prev = () => setLbIndex((lbIndex - 1 + IMGS.length) % IMGS.length);
+        const next = () => setLbIndex((lbIndex + 1) % IMGS.length);
+        return (
+          <div
+            onClick={() => setLbIndex(null)}
+            style={{
+              position: "fixed", inset: 0, zIndex: 600,
+              backgroundColor: "rgba(0,0,0,0.94)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              padding: isMobile ? "64px 16px 24px" : "60px 80px 40px",
+              animation: "fadeIn 0.2s ease",
+            }}
+          >
+            {/* Imagen */}
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{ position: "relative", maxWidth: 900, width: "100%", maxHeight: "80dvh" }}
+            >
+              <Image
+                src={cur.src} alt={cur.alt}
+                width={900} height={600}
+                style={{ objectFit: "contain", width: "100%", height: "auto", maxHeight: "80dvh", display: "block" }}
+              />
+            </div>
+
+            {/* Cerrar */}
+            <button onClick={() => setLbIndex(null)} style={{
+              position: "fixed", top: 16, right: 20,
+              background: "rgba(17,17,17,0.7)", border: "none", cursor: "pointer",
+              color: C.cream, fontSize: 18, width: 36, height: 36,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              zIndex: 10,
+            }} aria-label="Cerrar">✕</button>
+
+            {/* Flecha izquierda */}
+            <button onClick={e => { e.stopPropagation(); prev(); }} style={{
+              position: "fixed", left: isMobile ? 8 : 24, top: "50%", transform: "translateY(-50%)",
+              background: "rgba(17,17,17,0.7)", border: `1px solid ${C.border}`,
+              cursor: "pointer", color: C.cream, fontSize: 22,
+              width: isMobile ? 36 : 48, height: isMobile ? 36 : 48,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              zIndex: 10, transition: "background 0.2s",
+            }} aria-label="Anterior">‹</button>
+
+            {/* Flecha derecha */}
+            <button onClick={e => { e.stopPropagation(); next(); }} style={{
+              position: "fixed", right: isMobile ? 8 : 24, top: "50%", transform: "translateY(-50%)",
+              background: "rgba(17,17,17,0.7)", border: `1px solid ${C.border}`,
+              cursor: "pointer", color: C.cream, fontSize: 22,
+              width: isMobile ? 36 : 48, height: isMobile ? 36 : 48,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              zIndex: 10, transition: "background 0.2s",
+            }} aria-label="Siguiente">›</button>
+
+            {/* Contador y título */}
+            <div style={{
+              position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)",
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+              zIndex: 10,
+            }}>
+              <p style={{
+                fontFamily: H, fontWeight: 900, fontSize: 14,
+                textTransform: "uppercase", color: C.cream, letterSpacing: "0.06em",
+                textAlign: "center",
+              }}>{cur.alt}</p>
+              {/* Dots */}
+              <div style={{ display: "flex", gap: 6 }}>
+                {IMGS.map((_, i) => (
+                  <button key={i} onClick={e => { e.stopPropagation(); setLbIndex(i); }} style={{
+                    width: i === lbIndex ? 20 : 6, height: 6, borderRadius: 3,
+                    backgroundColor: i === lbIndex ? C.gold : "rgba(244,236,220,0.3)",
+                    border: "none", cursor: "pointer", padding: 0,
+                    transition: "all 0.25s ease",
+                  }} aria-label={`Foto ${i + 1}`} />
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </section>
   );
 }
@@ -1209,7 +1248,7 @@ function Espacio() {
             </h2>
           </div>
           <div style={{ maxWidth: 280 }}>
-            <p style={{ fontFamily: B, fontSize: 14, color: C.muted, lineHeight: 1.7 }}>
+            <p style={{ fontFamily: B, fontSize: 14, color: C.cream, lineHeight: 1.7, opacity: 0.75 }}>
               BASE se adapta a cada tipo de evento. Desde un show íntimo hasta una producción corporativa.
             </p>
           </div>
@@ -1816,27 +1855,6 @@ function Footer() {
           <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted, maxWidth: 260 }}>
             Venue para conciertos, fiestas y eventos en Quito, Ecuador.
           </p>
-          <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-            {[
-              { label: "Instagram", href: "https://www.instagram.com/soylabase?igsh=M2V4c2RieG9kMG40", icon: <IconInstagram size={16} color={C.black} /> },
-              { label: "TikTok",    href: "https://www.tiktok.com/@soylabase",                          icon: <IconTikTok    size={16} color={C.black} /> },
-              { label: "WhatsApp",  href: WA_URL,                                                        icon: <IconWhatsApp  size={16} color={C.black} /> },
-            ].map((s) => (
-              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-                title={s.label}
-                style={{
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  width: 38, height: 38,
-                  backgroundColor: C.gold, textDecoration: "none",
-                  transition: "background 0.2s",
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = C.goldHi; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = C.gold; }}
-              >
-                {s.icon}
-              </a>
-            ))}
-          </div>
         </div>
 
         {/* Col 2 — Nav */}
