@@ -17,15 +17,9 @@ const barlow = Barlow({
 });
 
 export const metadata: Metadata = {
-  title: "Distrito Creativo BASE — Música & Cultura",
+  title: "BASE — Música & Cultura",
   description:
-    "Distrito Creativo BASE — espacio para eventos, música en vivo y cultura urbana en Quito. Próximos eventos y merch exclusivo.",
-  openGraph: {
-    title: "Distrito Creativo BASE",
-    description: "Espacio para eventos, música y cultura en Quito, Ecuador.",
-    type: "website",
-    url: "https://soylabase.com",
-  },
+    "Espacio para eventos, música en vivo, y cultura urbana. Próximos eventos y merch exclusivo.",
 };
 
 export default function RootLayout({
