@@ -455,6 +455,7 @@ function Marquee() {
 function Events() {
   const refH = useReveal(0);
   const refC = useReveal(120);
+  const refG = useReveal(80);
   const { isMobile, isTablet } = useBreakpoint();
   return (
     <section id="eventos" style={{ backgroundColor: C.black, padding: isMobile ? "64px 0" : "100px 0" }}>
@@ -562,7 +563,7 @@ function Events() {
         </div>
 
         {/* Segundo evento — GIANNY */}
-        <div ref={refC} style={{
+        <div ref={refG} className="reveal" style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
           border: `1px solid ${C.borderHi}`,
