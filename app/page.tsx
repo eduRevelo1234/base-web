@@ -267,7 +267,7 @@ function Hero() {
       overflow: "hidden",
     }}>
       {/* Ghost "BASE" text behind everything */}
-      <div className="ghost-text" style={{ fontFamily: H }}>BASE</div>
+      <div className="ghost-text" style={{ fontFamily: H }}>B▲SE</div>
 
       {/* Gold glow top-right */}
       <div style={{
@@ -289,6 +289,20 @@ function Hero() {
       }}>
         {/* LEFT */}
         <div>
+          {/* Logo grande */}
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ backgroundColor: C.cream, display: "inline-block", padding: "10px 20px" }}>
+              <Image
+                src="/logo-full.png"
+                alt="Distrito Creativo BASE"
+                height={48}
+                width={320}
+                style={{ display: "block", objectFit: "contain" }}
+                priority
+              />
+            </div>
+          </div>
+
           {/* Live badge */}
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 40 }}>
             <span className="live-dot" />
@@ -1821,7 +1835,7 @@ function Footer() {
         justifyContent: "space-between", flexWrap: "wrap", gap: 12,
       }}>
         <p style={{ fontFamily: B, fontSize: 12, color: C.muted, opacity: 0.38 }}>
-          © {new Date().getFullYear()} BASE · Música & Cultura · Todos los derechos reservados.
+          © {new Date().getFullYear()} Distrito Creativo BASE · Todos los derechos reservados.
         </p>
         <div style={{ display: "flex", gap: 24 }}>
           {[["Privacidad","#"],["Términos","#"]].map(([l,h]) => (
@@ -1867,15 +1881,33 @@ function IconEmail({ size = 20, color = "currentColor" }: { size?: number; color
 }
 
 /* ════════════════════════════ WORDMARK ════════════════════════════ */
-function Wordmark({ dim }: { dim?: boolean }) {
+function Wordmark({ dim, size = 36 }: { dim?: boolean; size?: number }) {
+  if (dim) {
+    // placeholder dim version for merch cards
+    return (
+      <div style={{
+        fontFamily: H, fontWeight: 900, fontSize: size,
+        letterSpacing: "0.08em", textTransform: "uppercase",
+        lineHeight: 1, opacity: 0.07, userSelect: "none", color: C.cream,
+      }}>
+        BASE
+      </div>
+    );
+  }
   return (
+    // Logo on a cream pill so it stands out on dark backgrounds
     <div style={{
-      fontFamily: H, fontWeight: 900, fontSize: 20,
-      letterSpacing: "0.08em", textTransform: "uppercase",
-      lineHeight: 1, opacity: dim ? 0.07 : 1, userSelect: "none",
+      backgroundColor: C.cream,
+      padding: "5px 12px",
+      display: "inline-flex", alignItems: "center",
     }}>
-      <span style={{ color: C.gold }}>B</span>
-      <span style={{ color: C.cream }}>ASE</span>
+      <Image
+        src="/logo-dark.png"
+        alt="Distrito Creativo BASE"
+        height={28}
+        width={94}
+        style={{ display: "block", objectFit: "contain" }}
+      />
     </div>
   );
 }
