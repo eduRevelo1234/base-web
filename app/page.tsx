@@ -24,6 +24,15 @@ const C = {
 const H = "var(--font-heading),'Barlow Condensed',sans-serif";
 const B = "var(--font-body),'Barlow',system-ui,sans-serif";
 
+/* Scroll suave sin modificar la URL */
+function scrollTo(id: string) {
+  return (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    history.replaceState(null, "", window.location.pathname);
+  };
+}
+
 /* WhatsApp — reemplaza con el número real en formato internacional sin + ni espacios */
 const WA_NUMBER = "593980302389";
 const WA_MSG    = encodeURIComponent("Hola, quiero recibir información para reservar La Base para un evento.");
@@ -117,6 +126,14 @@ function GoldBtn({
       </button>
     );
   }
+  if (href?.startsWith("#")) {
+    return (
+      <a href={href} onClick={scrollTo(href.slice(1))} style={style}
+        onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
+        {children}
+      </a>
+    );
+  }
   return (
     <a href={href} target={target} rel={target === "_blank" ? "noopener noreferrer" : undefined}
       style={style} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
@@ -187,25 +204,28 @@ function Navbar() {
         height: 64,
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
-        <a href="#inicio" style={{ textDecoration: "none" }} onClick={() => setOpen(false)}>
+        <a href="#inicio" style={{ textDecoration: "none" }}
+          onClick={(e) => { scrollTo("inicio")(e); setOpen(false); }}>
           <Wordmark />
         </a>
 
         {!isMobile && !isTablet && (
           <nav style={{ display: "flex", gap: 32, alignItems: "center" }}>
             {LINKS.map(([l, h]) => (
-              <a key={h} href={h} className="u-hover" style={{
-                fontFamily: H, fontWeight: 700, fontSize: 12,
-                letterSpacing: "0.18em", textTransform: "uppercase",
-                color: C.cream, opacity: 0.65, textDecoration: "none",
-              }}>{l}</a>
+              <a key={h} href={h} className="u-hover"
+                onClick={scrollTo((h as string).slice(1))}
+                style={{
+                  fontFamily: H, fontWeight: 700, fontSize: 12,
+                  letterSpacing: "0.18em", textTransform: "uppercase",
+                  color: C.cream, opacity: 0.65, textDecoration: "none",
+                }}>{l}</a>
             ))}
           </nav>
         )}
 
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           {!isMobile && (
-            <a href="#booking" style={{
+            <a href="#booking" onClick={scrollTo("booking")} style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               fontFamily: H, fontWeight: 900, fontSize: 11,
               letterSpacing: "0.14em", textTransform: "uppercase",
@@ -255,7 +275,7 @@ function Navbar() {
         }}>
           {LINKS.map(([l, h]) => (
             <a key={h} href={h}
-              onClick={() => setOpen(false)}
+              onClick={(e) => { scrollTo((h as string).slice(1))(e); setOpen(false); }}
               style={{
                 fontFamily: H, fontWeight: 800, fontSize: 28,
                 letterSpacing: "0.06em", textTransform: "uppercase",
@@ -267,7 +287,7 @@ function Navbar() {
             >{l}</a>
           ))}
           <div style={{ marginTop: 20 }}>
-            <a href="#booking" onClick={() => setOpen(false)}
+            <a href="#booking" onClick={(e) => { scrollTo("booking")(e); setOpen(false); }}
               style={{
                 display: "inline-flex", alignItems: "center", gap: 8,
                 fontFamily: H, fontWeight: 900, fontSize: 13,
@@ -359,7 +379,7 @@ function Hero() {
           color: "rgba(244,236,220,0.78)", maxWidth: 460, marginBottom: 44,
         }}>
           BASE es un venue para conciertos, fiestas y eventos privados
-          en Quito. Capacidad para 402 personas, sonido profesional
+          en Quito. Capacidad para 300+ personas, sonido profesional
           y barra completa.
         </p>
 
@@ -377,7 +397,7 @@ function Hero() {
           gap: 2,
         }}>
           {[
-            { val: "402",         lbl: "Capacidad",        sub: "personas" },
+            { val: "300+",         lbl: "Capacidad",        sub: "personas" },
             { val: "Conciertos",  lbl: "Fiestas",          sub: "Corporativos" },
             { val: "UIO",         lbl: "Quito, Ecuador",   sub: "Francisco Salazar y José Tamayo" },
           ].map((s) => (
@@ -671,11 +691,34 @@ function ReservasModal() {
     return Object.keys(e).length === 0;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
+
+    const eventoLabel = form.evento === "cumbia"
+      ? "Cumbia Sin Fronteras (Sáb 1 Ago, 8:00 pm)"
+      : form.evento;
+
+    const enteradoLabel: Record<string, string> = {
+      ig: "Instagram", tk: "TikTok", ref: "Recomendación de un amigo", otro: "Otro",
+    };
+
+    const msg = [
+      "Hola! Quiero reservar mi lugar en BASE 🎶",
+      "",
+      `*Nombre:* ${form.nombre}`,
+      `*WhatsApp:* ${form.whatsapp}`,
+      `*Email:* ${form.email}`,
+      `*Personas:* ${form.personas}`,
+      `*Evento:* ${eventoLabel}`,
+      `*¿Cómo me enteré?:* ${enteradoLabel[form.enterado] ?? form.enterado}`,
+      "",
+      "Acepto los términos de reserva ✓",
+    ].join("\n");
+
+    const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+    window.open(url, "_blank");
     setLoading(false);
     setSent(true);
   }
@@ -768,7 +811,7 @@ function ReservasModal() {
               textTransform: "uppercase", color: C.cream,
             }}>¡Reserva confirmada!</h3>
             <p style={{ fontFamily: B, fontSize: 15, color: C.muted, maxWidth: 360, lineHeight: 1.75 }}>
-              Recibimos tu reserva. Te contactamos al WhatsApp que indicaste para confirmar tu lugar.
+              Se abrió WhatsApp con tu información. Envía el mensaje para confirmar tu lugar.
             </p>
             <button onClick={() => setOpen(false)} style={{
               marginTop: 8, all: "unset", cursor: "pointer",
@@ -1224,7 +1267,7 @@ function Espacio() {
     {
       n: "03",
       title: "Eventos Corporativos",
-      desc: "Lanzamientos, presentaciones, afterworks y convenciones con capacidad para 402 personas.",
+      desc: "Lanzamientos, presentaciones, afterworks y convenciones con capacidad para 300+ personas.",
       tag: "Corporativos",
     },
   ];
@@ -1309,7 +1352,7 @@ function Espacio() {
           gap: isMobile ? 24 : 0,
         }}>
           {[
-            { val: "402",     lbl: "Personas" },
+            { val: "300+",     lbl: "Personas" },
             { val: "Sonido",  lbl: "Profesional" },
             { val: "Barra",   lbl: "Completa" },
             { val: "UIO",     lbl: "Quito" },
@@ -1394,7 +1437,7 @@ function Booking() {
             {/* Info cards */}
             <div style={{ display: "flex", flexDirection: "column", gap: 3, marginBottom: 40 }}>
               {[
-                { label: "Capacidad",    val: "402 personas" },
+                { label: "Capacidad",    val: "300+ personas" },
                 { label: "Tipos",        val: "Corporativos · Conciertos · Fiestas" },
                 { label: "Ubicación",    val: "Quito, Ecuador" },
                 { label: "Contacto",     val: "WhatsApp directo" },
@@ -1550,7 +1593,7 @@ function Merch() {
                     <Wordmark dim />
                   </div>
                   <div className="merch-overlay">
-                    <a href="#contacto" style={{
+                    <a href="#contacto" onClick={scrollTo("contacto")} style={{
                       fontFamily: H, fontWeight: 900, fontSize: 12,
                       letterSpacing: "0.14em", textTransform: "uppercase",
                       color: C.black, backgroundColor: C.gold,
@@ -1830,115 +1873,139 @@ function Footer() {
     { label: "Contacto",   href: "#contacto" },
   ];
   const SOCIAL = [
-    { label: "Instagram", href: "https://www.instagram.com/soylabase?igsh=M2V4c2RieG9kMG40", handle: "@soylabase",             icon: <IconInstagram size={17} color={C.gold} /> },
-    { label: "TikTok",    href: "https://www.tiktok.com/@soylabase",                          handle: "@soylabase",             icon: <IconTikTok    size={17} color={C.gold} /> },
-    { label: "Email",     href: "mailto:contacto@soylabase.com",                              handle: "contacto@soylabase.com", icon: <IconEmail     size={17} color={C.gold} /> },
-    { label: "WhatsApp",  href: WA_URL,                                                        handle: "Reservar",               icon: <IconWhatsApp  size={17} color={C.gold} /> },
+    { label: "Instagram", href: "https://www.instagram.com/soylabase?igsh=M2V4c2RieG9kMG40", handle: "@soylabase",            icon: <IconInstagram size={18} color={C.black} /> },
+    { label: "TikTok",    href: "https://www.tiktok.com/@soylabase",                          handle: "@soylabase",            icon: <IconTikTok    size={18} color={C.black} /> },
+    { label: "Email",     href: "mailto:contacto@soylabase.com",                              handle: "contacto@soylabase.com",icon: <IconEmail     size={18} color={C.black} /> },
+    { label: "WhatsApp",  href: WA_URL,                                                        handle: "WhatsApp",              icon: <IconWhatsApp  size={18} color={C.black} /> },
   ];
 
   return (
-    <footer style={{ backgroundColor: C.black, borderTop: `1px solid ${C.border}` }}>
+    <footer style={{ backgroundColor: C.blackSoft }}>
 
-      {/* Main grid */}
+      {/* Gold accent top border */}
+      <div style={{ height: 3, background: `linear-gradient(to right, ${C.gold}, ${C.goldHi}, ${C.gold})` }} />
+
+      {/* Main content */}
       <div style={{
         maxWidth: 1280, margin: "0 auto",
-        padding: isMobile ? "40px 20px 0" : "64px 40px 0",
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "1.8fr 1fr 1fr",
-        gap: isMobile ? 40 : 48,
-        borderBottom: `1px solid ${C.border}`,
-        paddingBottom: isMobile ? 40 : 64,
+        padding: isMobile ? "48px 20px 40px" : isTablet ? "56px 32px 48px" : "64px 40px 56px",
       }}>
 
-        {/* Col 1 — Brand */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <Wordmark />
-          <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted, maxWidth: 260 }}>
-            Venue para conciertos, fiestas y eventos en Quito, Ecuador.
-          </p>
-        </div>
+        {/* Top row: brand + nav */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: isMobile ? 40 : 64,
+          paddingBottom: isMobile ? 36 : 48,
+          borderBottom: `1px solid ${C.border}`,
+          marginBottom: isMobile ? 36 : 48,
+        }}>
 
-        {/* Col 2 — Nav */}
-        <div>
-          <p style={{
-            fontFamily: H, fontWeight: 700, fontSize: 10,
-            letterSpacing: "0.28em", textTransform: "uppercase",
-            color: C.muted, marginBottom: 24,
-          }}>Secciones</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            {NAV.map((n) => (
-              <a key={n.href} href={n.href} className="u-hover" style={{
-                fontFamily: H, fontWeight: 800, fontSize: 16,
-                letterSpacing: "0.04em", textTransform: "uppercase",
-                color: C.cream, textDecoration: "none",
-                opacity: 0.7,
-              }}>{n.label}</a>
-            ))}
+          {/* Brand */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <Wordmark />
+            <p style={{ fontFamily: B, fontSize: 15, lineHeight: 1.75, color: C.muted, maxWidth: 300 }}>
+              Venue para conciertos, fiestas y eventos en Quito, Ecuador.
+            </p>
+            <a href="#booking" onClick={scrollTo("booking")} style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              fontFamily: H, fontWeight: 900, fontSize: 11,
+              letterSpacing: "0.14em", textTransform: "uppercase",
+              color: C.black, backgroundColor: C.gold,
+              padding: "10px 20px", textDecoration: "none",
+              width: "fit-content", marginTop: 4,
+            }}>
+              Reservar el espacio →
+            </a>
+          </div>
+
+          {/* Nav — 2 col wrap on mobile, single col on desktop */}
+          <div>
+            <p style={{
+              fontFamily: H, fontWeight: 700, fontSize: 10,
+              letterSpacing: "0.28em", textTransform: "uppercase",
+              color: C.gold, marginBottom: 20,
+            }}>Navegación</p>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "12px 24px",
+            }}>
+              {NAV.map((n) => (
+                <a key={n.href} href={n.href} onClick={scrollTo(n.href.slice(1))} className="u-hover" style={{
+                  fontFamily: H, fontWeight: 800, fontSize: 15,
+                  letterSpacing: "0.04em", textTransform: "uppercase",
+                  color: C.cream, textDecoration: "none",
+                }}>{n.label}</a>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Col 3 — Contacto */}
-        <div>
+        {/* Social row */}
+        <div style={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "flex-start" : "center",
+          justifyContent: "space-between",
+          gap: isMobile ? 24 : 16,
+          paddingBottom: isMobile ? 36 : 40,
+          borderBottom: `1px solid ${C.border}`,
+          marginBottom: 28,
+        }}>
           <p style={{
             fontFamily: H, fontWeight: 700, fontSize: 10,
             letterSpacing: "0.28em", textTransform: "uppercase",
-            color: C.muted, marginBottom: 24,
+            color: C.gold, flexShrink: 0,
           }}>Redes & Contacto</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: isMobile ? 8 : 10,
+          }}>
             {SOCIAL.map((s) => (
               <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+                title={s.label}
                 style={{
-                  display: "flex", alignItems: "center", gap: 12,
-                  textDecoration: "none", padding: "10px 14px",
-                  border: `1px solid ${C.border}`,
-                  backgroundColor: C.blackCard,
-                  transition: "border-color 0.2s, background 0.2s",
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  textDecoration: "none",
+                  fontFamily: H, fontWeight: 800, fontSize: 12,
+                  letterSpacing: "0.04em", textTransform: "uppercase",
+                  color: C.black, backgroundColor: C.gold,
+                  padding: "8px 14px",
+                  transition: "background 0.2s",
+                  whiteSpace: "nowrap",
                 }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = C.borderHi;
-                  (e.currentTarget as HTMLElement).style.backgroundColor = C.blackHi;
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = C.border;
-                  (e.currentTarget as HTMLElement).style.backgroundColor = C.blackCard;
-                }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = C.goldHi}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = C.gold}
               >
-                <span style={{ flexShrink: 0 }}>{s.icon}</span>
-                <div>
-                  <p style={{
-                    fontFamily: H, fontWeight: 700, fontSize: 9,
-                    letterSpacing: "0.2em", textTransform: "uppercase",
-                    color: C.muted, opacity: 0.5, lineHeight: 1, marginBottom: 2,
-                  }}>{s.label}</p>
-                  <p style={{ fontFamily: H, fontWeight: 800, fontSize: 14, color: C.cream, lineHeight: 1 }}>{s.handle}</p>
-                </div>
-                <span style={{ marginLeft: "auto", color: C.muted, opacity: 0.3, fontSize: 12 }}>↗</span>
+                {s.icon}
+                {s.handle}
               </a>
             ))}
           </div>
         </div>
 
-      </div>
-
-      {/* Bottom bar */}
-      <div style={{
-        maxWidth: 1280, margin: "0 auto",
-        padding: isMobile ? "20px 20px" : "24px 40px",
-        display: "flex", alignItems: "center",
-        justifyContent: "space-between", flexWrap: "wrap", gap: 12,
-      }}>
-        <p style={{ fontFamily: B, fontSize: 12, color: C.muted, opacity: 0.38 }}>
-          © {new Date().getFullYear()} BASE · Quito, Ecuador · Todos los derechos reservados.
-        </p>
-        <div style={{ display: "flex", gap: 24 }}>
-          {[["Privacidad","#"],["Términos","#"]].map(([l,h]) => (
-            <a key={l} href={h} className="u-hover" style={{
-              fontFamily: H, fontWeight: 700, fontSize: 10,
-              letterSpacing: "0.18em", textTransform: "uppercase",
-              color: C.muted, textDecoration: "none", opacity: 0.4,
-            }}>{l}</a>
-          ))}
+        {/* Bottom bar */}
+        <div style={{
+          display: "flex", alignItems: "center",
+          justifyContent: "space-between", flexWrap: "wrap", gap: 12,
+        }}>
+          <p style={{ fontFamily: B, fontSize: 12, color: C.muted }}>
+            © {new Date().getFullYear()} BASE · Quito, Ecuador
+          </p>
+          <div style={{ display: "flex", gap: 20 }}>
+            {[["Privacidad","#"],["Términos","#"]].map(([l,h]) => (
+              <a key={l} href={h} className="u-hover" style={{
+                fontFamily: H, fontWeight: 700, fontSize: 10,
+                letterSpacing: "0.18em", textTransform: "uppercase",
+                color: C.muted, textDecoration: "none",
+              }}>{l}</a>
+            ))}
+          </div>
         </div>
+
       </div>
     </footer>
   );
