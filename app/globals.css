@@ -1,26 +1,169 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --black:       #111111;
+  --black-soft:  #181818;
+  --black-card:  #1f1f1f;
+  --black-hi:    #262626;
+  --gold:        #df9f00;
+  --gold-hover:  #f0ad00;
+  --gold-dim:    rgba(223,159,0,0.10);
+  --gold-glow:   rgba(223,159,0,0.06);
+  --brown:       #231806;
+  --cream:       #f4ecdc;
+  --muted:       rgba(244,236,220,0.45);
+  --muted2:      rgba(244,236,220,0.22);
+  --border:      rgba(223,159,0,0.12);
+  --border-hi:   rgba(223,159,0,0.32);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html  { scroll-behavior: smooth; }
+body  {
+  background: var(--black);
+  color: var(--cream);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Scrollbar ── */
+::-webkit-scrollbar       { width: 3px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--gold); }
+
+/* ── Scroll reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.75s cubic-bezier(0.16,1,0.3,1),
+              transform 0.75s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible            { opacity: 1; transform: translateY(0); }
+.reveal-delay-1            { transition-delay: 0.1s; }
+.reveal-delay-2            { transition-delay: 0.22s; }
+.reveal-delay-3            { transition-delay: 0.34s; }
+
+/* ── Marquee ── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+
+/* ── Pulse ── */
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+.live-dot {
+  position: relative;
+  display: inline-block;
+  width: 8px; height: 8px;
+}
+.live-dot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulse-dot 1.8s ease-in-out infinite;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Underline hover ── */
+.u-hover {
+  position: relative;
+  text-decoration: none;
+}
+.u-hover::after {
+  content: "";
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 0; height: 1px;
+  background: var(--gold);
+  transition: width 0.28s ease;
+}
+.u-hover:hover::after { width: 100%; }
+
+/* ── Merch hover ── */
+.merch-wrap { position: relative; overflow: hidden; }
+.merch-wrap img,
+.merch-wrap .merch-placeholder {
+  transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.merch-card:hover .merch-wrap img,
+.merch-card:hover .merch-wrap .merch-placeholder { transform: scale(1.05); }
+.merch-overlay {
+  position: absolute; inset: 0;
+  background: rgba(17,17,17,0.85);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+.merch-card:hover .merch-overlay { opacity: 1; }
+
+/* ── Bento card hover ── */
+.bento-card {
+  transition: border-color 0.25s ease;
+}
+.bento-card:hover {
+  border-color: var(--border-hi) !important;
+}
+
+/* ── Ghost text ── */
+.ghost-text {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(180px, 30vw, 380px);
+  font-weight: 900;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(223,159,0,0.06);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* ── Modal animations ── */
+@keyframes fadeIn   { from { opacity: 0; }                           to { opacity: 1; } }
+@keyframes slideUp  { from { transform: translateY(100%); }          to { transform: translateY(0); } }
+@keyframes scaleIn  { from { opacity: 0; transform: scale(0.96); }   to { opacity: 1; transform: scale(1); } }
+
+/* ── Grain ── */
+@keyframes grain-shift {
+  0%,100% { transform: translate(0,0); }
+  20%     { transform: translate(-3%,-4%); }
+  40%     { transform: translate(3%, 2%); }
+  60%     { transform: translate(-2%, 4%); }
+  80%     { transform: translate(4%,-2%); }
+}
+.grain-overlay {
+  position: fixed;
+  inset: -50%;
+  width: 200%; height: 200%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.038;
+  animation: grain-shift 6s steps(8) infinite;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
 }
