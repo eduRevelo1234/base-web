@@ -2,6 +2,7 @@
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useState, useEffect, useRef } from "react";
+import emailjs from "@emailjs/browser";
 
 const MapEmbed = dynamic(() => import("./MapEmbed"), { ssr: false });
 
@@ -556,6 +557,96 @@ function Events() {
                 ))}
               </div>
               <GoldBtn onClick={openReservas}>Reservar lugar →</GoldBtn>
+            </div>
+          </div>
+        </div>
+
+        {/* Segundo evento — GIANNY */}
+        <div ref={refC} style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
+          border: `1px solid ${C.borderHi}`,
+          overflow: "hidden", marginBottom: 3,
+        }}>
+          <div style={{ position: "relative", minHeight: isMobile ? 320 : 480, backgroundColor: "#0d0d0d" }}>
+            <Image
+              src="/Evento29Julio.jpeg"
+              alt="GIANNY En Vivo · 31 de Julio"
+              fill style={{ objectFit: "contain" }}
+              sizes="(max-width:900px) 100vw, 60vw"
+            />
+          </div>
+
+          <div style={{
+            backgroundColor: C.blackCard,
+            padding: isMobile ? "28px 24px" : "48px 44px",
+            display: "flex", flexDirection: "column", justifyContent: "space-between",
+          }}>
+            <div>
+              <span style={{
+                display: "inline-block", backgroundColor: "transparent",
+                border: `1px solid ${C.gold}`, color: C.gold,
+                fontFamily: H, fontWeight: 800, fontSize: 10,
+                letterSpacing: "0.22em", textTransform: "uppercase",
+                padding: "5px 12px", marginBottom: 32,
+              }}>
+                Próximo evento
+              </span>
+
+              <h3 style={{
+                fontFamily: H, fontWeight: 900,
+                fontSize: "clamp(38px,4vw,60px)", lineHeight: 0.9,
+                textTransform: "uppercase", color: C.cream, marginBottom: 12,
+              }}>
+                GIANNY<br />EN VIVO
+              </h3>
+
+              <p style={{
+                fontFamily: B, fontSize: 13, color: C.gold,
+                letterSpacing: "0.06em", marginBottom: 20,
+              }}>
+                Mad Max · Mala Mia
+              </p>
+
+              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
+
+              <p style={{ fontFamily: B, fontSize: 15, lineHeight: 1.75, color: C.muted }}>
+                Música que se siente. Una noche de rap y cultura urbana en Quito.
+              </p>
+            </div>
+
+            <div>
+              <div style={{
+                display: "flex", flexDirection: "column", gap: 14,
+                borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32,
+              }}>
+                {[
+                  ["Fecha", "Vie 31 de Julio"],
+                  ["Hora",  "7:00 pm"],
+                  ["Lugar", "Mad Max · Quito"],
+                ].map(([k,v]) => (
+                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                    <span style={{
+                      fontFamily: H, fontWeight: 700, fontSize: 10,
+                      letterSpacing: "0.22em", textTransform: "uppercase",
+                      color: C.muted, width: 52, flexShrink: 0, paddingTop: 3,
+                    }}>{k}</span>
+                    <span style={{
+                      fontFamily: H, fontWeight: 900, fontSize: 17,
+                      textTransform: "uppercase", color: C.cream, lineHeight: 1.2,
+                    }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              <a href={WA_URL} target="_blank" rel="noopener noreferrer" style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                fontFamily: H, fontWeight: 900, fontSize: 13,
+                letterSpacing: "0.14em", textTransform: "uppercase",
+                color: C.black, backgroundColor: C.gold,
+                padding: "14px 32px", textDecoration: "none",
+              }}>
+                Más info →
+              </a>
             </div>
           </div>
         </div>
@@ -1737,10 +1828,41 @@ function Location() {
 }
 
 /* ════════════════════════════ CONTACT ════════════════════════════ */
+const EJS_SERVICE  = "service_74icrmm";
+const EJS_TEMPLATE = "template_vrh005p";
+const EJS_KEY      = "ir0X9nr2U8iRt--jH";
+
 function Contact() {
-  const [sent, setSent] = useState(false);
+  const [sent, setSent]       = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
   const ref = useReveal(0);
   const { isMobile, isTablet } = useBreakpoint();
+
+  const inputStyle: React.CSSProperties = {
+    backgroundColor: C.blackSoft, border: `1px solid ${C.border}`,
+    color: C.cream, fontFamily: B, fontSize: 14,
+    padding: "14px 16px", outline: "none", width: "100%", boxSizing: "border-box",
+  };
+  const labelStyle: React.CSSProperties = {
+    fontFamily: H, fontWeight: 700, fontSize: 10,
+    letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted,
+  };
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      await emailjs.sendForm(EJS_SERVICE, EJS_TEMPLATE, formRef.current!, EJS_KEY);
+      setSent(true);
+    } catch {
+      setError("Hubo un error al enviar. Intenta de nuevo o escríbenos por WhatsApp.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <section id="contacto" style={{ backgroundColor: C.blackSoft, padding: isMobile ? "64px 0" : "100px 0", borderTop: `1px solid ${C.border}` }}>
@@ -1812,46 +1934,42 @@ function Contact() {
               </p>
             </div>
           ) : (
-            <form onSubmit={(e) => { e.preventDefault(); setSent(true); }}
+            <form ref={formRef} onSubmit={handleSubmit}
               style={{
                 backgroundColor: C.blackCard, border: `1px solid ${C.border}`,
-                padding: "44px", display: "flex", flexDirection: "column", gap: 22,
+                padding: isMobile ? "32px 24px" : "44px",
+                display: "flex", flexDirection: "column", gap: 22,
               }}>
-              {[
-                { id: "name",  label: "Nombre", type: "text",  ph: "Tu nombre"    },
-                { id: "email", label: "Email",  type: "email", ph: "tu@email.com" },
-              ].map((f) => (
-                <div key={f.id} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <label htmlFor={f.id} style={{
-                    fontFamily: H, fontWeight: 700, fontSize: 10,
-                    letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted,
-                  }}>{f.label}</label>
-                  <input id={f.id} type={f.type} required placeholder={f.ph} style={{
-                    backgroundColor: C.blackSoft, border: `1px solid ${C.border}`,
-                    color: C.cream, fontFamily: B, fontSize: 14,
-                    padding: "14px 16px", outline: "none",
-                  }} />
-                </div>
-              ))}
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label htmlFor="msg" style={{
-                  fontFamily: H, fontWeight: 700, fontSize: 10,
-                  letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted,
-                }}>Mensaje</label>
-                <textarea id="msg" rows={4} required placeholder="¿En qué podemos ayudarte?" style={{
-                  backgroundColor: C.blackSoft, border: `1px solid ${C.border}`,
-                  color: C.cream, fontFamily: B, fontSize: 14,
-                  padding: "14px 16px", outline: "none", resize: "none",
+                <label htmlFor="nombre" style={labelStyle}>Nombre</label>
+                <input id="nombre" name="nombre" type="text" required placeholder="Tu nombre" style={inputStyle} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <label htmlFor="email" style={labelStyle}>Email</label>
+                <input id="email" name="email" type="email" required placeholder="tu@email.com" style={inputStyle} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <label htmlFor="telefono" style={labelStyle}>Teléfono / WhatsApp</label>
+                <input id="telefono" name="telefono" type="tel" placeholder="+593 99 000 0000" style={inputStyle} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <label htmlFor="mensaje" style={labelStyle}>Mensaje</label>
+                <textarea id="mensaje" name="mensaje" rows={4} required placeholder="¿En qué podemos ayudarte?" style={{
+                  ...inputStyle, resize: "none",
                 }} />
               </div>
-              <button type="submit" style={{
-                backgroundColor: C.gold, color: C.black,
+              {error && (
+                <p style={{ fontFamily: B, fontSize: 13, color: "#ff6b6b" }}>{error}</p>
+              )}
+              <button type="submit" disabled={loading} style={{
+                backgroundColor: loading ? C.border : C.gold,
+                color: C.black,
                 fontFamily: H, fontWeight: 900, fontSize: 13,
                 letterSpacing: "0.14em", textTransform: "uppercase",
-                border: "none", padding: "16px", cursor: "pointer",
+                border: "none", padding: "16px", cursor: loading ? "not-allowed" : "pointer",
                 marginTop: 4, transition: "background 0.2s",
               }}>
-                Enviar Mensaje
+                {loading ? "Enviando..." : "Enviar Mensaje →"}
               </button>
             </form>
           )}
