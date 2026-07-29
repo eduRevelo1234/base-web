@@ -1611,6 +1611,7 @@ function Location() {
           position: "relative",
           minHeight: isMobile ? 300 : isTablet ? 380 : "100%",
           order: isMobile ? 2 : 1,
+          isolation: "isolate",
         }}>
           <MapEmbed />
           {!isMobile && !isTablet && (
