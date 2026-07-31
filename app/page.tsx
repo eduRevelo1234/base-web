@@ -606,14 +606,10 @@ function Events() {
                 fontFamily: B, fontSize: 13, color: C.gold,
                 letterSpacing: "0.06em", marginBottom: 20,
               }}>
-                Mad Max · Mala Mia
+                Promotor: Mad Max - Mala Mia
               </p>
 
               <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
-
-              <p style={{ fontFamily: B, fontSize: 15, lineHeight: 1.75, color: C.muted }}>
-                Música que se siente. Una noche de rap y cultura urbana en Quito.
-              </p>
             </div>
 
             <div>
@@ -624,7 +620,7 @@ function Events() {
                 {[
                   ["Fecha", "Vie 31 de Julio"],
                   ["Hora",  "7:00 pm"],
-                  ["Lugar", "Mad Max · Quito"],
+                  ["Lugar", "BASE · Quito"],
                 ].map(([k,v]) => (
                   <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
                     <span style={{
