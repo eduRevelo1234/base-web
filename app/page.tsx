@@ -398,7 +398,7 @@ function Hero() {
           gap: 2,
         }}>
           {[
-            { val: "300+",         lbl: "Capacidad",        sub: "personas" },
+            { val: "+300",         lbl: "Personas",        sub: "Paradas" },
             { val: "Conciertos",  lbl: "Fiestas",          sub: "Corporativos" },
             { val: "UIO",         lbl: "Quito, Ecuador",   sub: "Detrás del Hospital Baca Ortíz" },
           ].map((s) => (
@@ -1444,7 +1444,7 @@ function Espacio() {
           gap: isMobile ? 24 : 0,
         }}>
           {[
-            { val: "300+",     lbl: "Personas" },
+            { val: "+300",     lbl: "Personas Paradas" },
             { val: "Sonido",  lbl: "Profesional" },
             { val: "Barra",   lbl: "Completa" },
             { val: "UIO",     lbl: "Quito" },
@@ -1529,7 +1529,7 @@ function Booking() {
             {/* Info cards */}
             <div style={{ display: "flex", flexDirection: "column", gap: 3, marginBottom: 40 }}>
               {[
-                { label: "Capacidad",    val: "300+ personas" },
+                { label: "Capacidad",    val: "+300 personas paradas" },
                 { label: "Tipos",        val: "Corporativos · Conciertos · Fiestas" },
                 { label: "Ubicación",    val: "Detrás del Hospital Baca Ortíz, Esquina" },
                 { label: "Contacto",     val: "WhatsApp directo" },
