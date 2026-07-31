@@ -400,7 +400,7 @@ function Hero() {
           {[
             { val: "300+",         lbl: "Capacidad",        sub: "personas" },
             { val: "Conciertos",  lbl: "Fiestas",          sub: "Corporativos" },
-            { val: "UIO",         lbl: "Quito, Ecuador",   sub: "Francisco Salazar y José Tamayo" },
+            { val: "UIO",         lbl: "Quito, Ecuador",   sub: "Detrás del Hospital Baca Ortíz" },
           ].map((s) => (
             <div key={s.lbl} style={{
               backgroundColor: C.blackCard,
@@ -1531,7 +1531,7 @@ function Booking() {
               {[
                 { label: "Capacidad",    val: "300+ personas" },
                 { label: "Tipos",        val: "Corporativos · Conciertos · Fiestas" },
-                { label: "Ubicación",    val: "Quito, Ecuador" },
+                { label: "Ubicación",    val: "Detrás del Hospital Baca Ortíz, Esquina" },
                 { label: "Contacto",     val: "WhatsApp directo" },
               ].map((row) => (
                 <div key={row.label} style={{
@@ -1776,8 +1776,8 @@ function Location() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: 20, marginBottom: 40 }}>
             {[
-              { icon: "📍", label: "Dirección",  value: "Francisco Salazar y José Tamayo", sub: "Quito, Ecuador" },
-              { icon: "🏙",  label: "Referencia", value: "Quito, Ecuador",                  sub: "Francisco Salazar y José Tamayo" },
+              { icon: "📍", label: "Dirección",  value: "Detrás del Hospital Baca Ortíz", sub: "Esquina · Quito, Ecuador" },
+              { icon: "🏙",  label: "Referencia", value: "Esquina",                         sub: "Fácil de encontrar" },
             ].map((item) => (
               <div key={item.label} style={{
                 display: "flex", gap: 16, alignItems: "flex-start",
