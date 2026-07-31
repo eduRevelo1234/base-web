@@ -1441,12 +1441,9 @@ function Espacio() {
           gap: isMobile ? 24 : 0,
         }}>
           {[
-            { val: "+300",     lbl: "Personas Paradas" },
-            { val: "Sonido",  lbl: "Profesional" },
-            { val: "Barra",   lbl: "Completa" },
-            { val: "UIO",     lbl: "Quito" },
+            "+300 paradas", "Sonido", "Barra", "Quito",
           ].map((d, i) => (
-            <div key={d.lbl} style={{
+            <div key={d} style={{
               display: "flex", flexDirection: "column", gap: 4,
               borderLeft: (!isMobile && i > 0) ? `1px solid ${C.border}` : "none",
               paddingLeft: (!isMobile && i > 0) ? 40 : 0,
@@ -1454,11 +1451,8 @@ function Espacio() {
               <span style={{
                 fontFamily: H, fontWeight: 900, fontSize: 36,
                 color: C.gold, lineHeight: 1,
-              }}>{d.val}</span>
-              <span style={{
-                fontFamily: H, fontWeight: 700, fontSize: 10,
-                letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted,
-              }}>{d.lbl}</span>
+                textTransform: "uppercase",
+              }}>{d}</span>
             </div>
           ))}
         </div>
