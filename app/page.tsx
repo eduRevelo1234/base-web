@@ -187,7 +187,7 @@ function Navbar() {
     ["El Espacio", "#espacio" ],
     ["Galería",    "#galeria" ],
     ["Eventos",    "#eventos" ],
-    ["Booking",    "#booking"   ],
+    ["Reservas",   "#booking"   ],
     ["Ubicación",  "#ubicacion" ],
     ["Contacto",   "#contacto"  ],
   ];
@@ -235,7 +235,7 @@ function Navbar() {
               padding: "10px 22px", textDecoration: "none",
               transition: "background 0.2s",
             }}>
-              Booking
+              Reservas
             </a>
           )}
 
@@ -297,7 +297,7 @@ function Navbar() {
                 color: C.black, backgroundColor: C.gold,
                 padding: "13px 32px", textDecoration: "none",
               }}>
-              Booking →
+              Reservas →
             </a>
           </div>
         </div>
@@ -1507,7 +1507,7 @@ function Booking() {
 
           {/* Left */}
           <div>
-            <Label>Booking</Label>
+            <Label>Reservas</Label>
             <h2 style={{
               fontFamily: H, fontWeight: 900,
               fontSize: "clamp(52px,7vw,92px)", lineHeight: 0.88,
@@ -1985,7 +1985,7 @@ function Footer() {
     { label: "El Espacio", href: "#espacio"  },
     { label: "Galería",    href: "#galeria"  },
     { label: "Eventos",    href: "#eventos"  },
-    { label: "Booking",    href: "#booking"   },
+    { label: "Reservas",   href: "#booking"   },
     { label: "Ubicación",  href: "#ubicacion" },
     { label: "Contacto",   href: "#contacto"  },
   ];
