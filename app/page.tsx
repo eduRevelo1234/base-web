@@ -1633,9 +1633,9 @@ function Booking() {
 
 /* ════════════════════════════ MERCH ════════════════════════════ */
 const MERCH = [
-  { id: 1, name: "Camiseta BASE", desc: "100% algodón · Serigrafía gold", price: "$35", avail: true },
-  { id: 2, name: "Gorra BASE",    desc: "Bordado en dorado · Snapback",    price: "$28", avail: true },
-  { id: 3, name: "Tote Bag",      desc: "Lona · Print completo",           price: "$20", avail: false },
+  { id: 1, name: "Camiseta", desc: "100% algodón", price: "$0", avail: false },
+  { id: 2, name: "Gorra",    desc: "Snapback",      price: "$0", avail: false },
+  { id: 3, name: "Tote Bag", desc: "Lona",          price: "$0", avail: false },
 ];
 
 function Merch() {
