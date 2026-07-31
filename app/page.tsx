@@ -381,9 +381,8 @@ function Hero() {
           fontFamily: B, fontSize: isMobile ? 15 : 17, lineHeight: 1.75,
           color: "rgba(244,236,220,0.78)", maxWidth: 460, marginBottom: 44,
         }}>
-          BASE es un venue para conciertos, fiestas y eventos privados
-          en Quito. Capacidad para 300+ personas, sonido profesional
-          y barra completa.
+          BASE es un venue para conciertos, eventos corporativos, privados y fiestas. Capacidad para +300 personas.<br />
+          Conoce más acerca de nosotros.
         </p>
 
         {/* CTAs */}
