@@ -187,8 +187,9 @@ function Navbar() {
     ["El Espacio", "#espacio" ],
     ["Galería",    "#galeria" ],
     ["Eventos",    "#eventos" ],
-    ["Booking",    "#booking" ],
-    ["Contacto",   "#contacto"],
+    ["Booking",    "#booking"   ],
+    ["Ubicación",  "#ubicacion" ],
+    ["Contacto",   "#contacto"  ],
   ];
 
   return (
@@ -1984,8 +1985,9 @@ function Footer() {
     { label: "El Espacio", href: "#espacio"  },
     { label: "Galería",    href: "#galeria"  },
     { label: "Eventos",    href: "#eventos"  },
-    { label: "Booking",    href: "#booking"  },
-    { label: "Contacto",   href: "#contacto" },
+    { label: "Booking",    href: "#booking"   },
+    { label: "Ubicación",  href: "#ubicacion" },
+    { label: "Contacto",   href: "#contacto"  },
   ];
   const SOCIAL = [
     { label: "Instagram", href: "https://www.instagram.com/soylabase?igsh=M2V4c2RieG9kMG40", handle: "@soylabase",            icon: <IconInstagram size={18} color={C.black} /> },
