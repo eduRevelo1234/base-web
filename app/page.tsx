@@ -79,9 +79,10 @@ function useBreakpoint() {
     return () => window.removeEventListener("resize", fn);
   }, []);
   return {
-    isMobile:  w < 640,
-    isTablet:  w >= 640 && w < 1024,
-    isDesktop: w >= 1024,
+    isSmallMobile: w < 430,
+    isMobile:      w < 640,
+    isTablet:      w >= 640 && w < 1024,
+    isDesktop:     w >= 1024,
     w,
   };
 }
@@ -202,7 +203,7 @@ function Navbar() {
     }}>
       <div style={{
         maxWidth: 1280, margin: "0 auto",
-        padding: isMobile ? "0 20px" : "0 40px",
+        padding: isMobile ? "0 20px" : isTablet ? "0 32px" : "0 40px",
         height: 64,
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
@@ -308,7 +309,7 @@ function Navbar() {
 
 /* ════════════════════════════ HERO ════════════════════════════ */
 function Hero() {
-  const { isMobile, isTablet } = useBreakpoint();
+  const { isMobile, isTablet, isSmallMobile } = useBreakpoint();
 
   return (
     <section id="inicio" style={{
@@ -348,7 +349,7 @@ function Hero() {
       <div style={{
         position: "relative", zIndex: 1,
         maxWidth: 1280, margin: "0 auto", width: "100%",
-        padding: isMobile ? "110px 20px 72px" : isTablet ? "120px 32px 80px" : "130px 40px 100px",
+        padding: isSmallMobile ? "100px 16px 64px" : isMobile ? "110px 20px 72px" : isTablet ? "120px 36px 80px" : "130px 40px 100px",
       }}>
         {/* Top tag */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 36 }}>
@@ -364,7 +365,7 @@ function Hero() {
         {/* Headline */}
         <h1 style={{
           fontFamily: H, fontWeight: 900,
-          fontSize: isMobile ? "clamp(64px,18vw,96px)" : "clamp(88px,10vw,148px)",
+          fontSize: isSmallMobile ? "clamp(52px,15vw,80px)" : isMobile ? "clamp(64px,16vw,96px)" : isTablet ? "clamp(72px,12vw,120px)" : "clamp(88px,10vw,148px)",
           lineHeight: 0.86, textTransform: "uppercase",
           color: C.cream, marginBottom: 36,
           letterSpacing: "-0.01em",
@@ -395,7 +396,7 @@ function Hero() {
         <div style={{
           marginTop: isMobile ? 52 : 72,
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)",
+          gridTemplateColumns: isSmallMobile ? "1fr 1fr" : isMobile ? "repeat(3, 1fr)" : "repeat(3, 1fr)",
           gap: 2,
         }}>
           {[
@@ -410,7 +411,7 @@ function Hero() {
             }}>
               <div style={{
                 fontFamily: H, fontWeight: 900,
-                fontSize: isMobile ? 28 : 36, color: C.gold, lineHeight: 1,
+                fontSize: isSmallMobile ? 20 : isMobile ? 24 : isTablet ? 30 : 36, color: C.gold, lineHeight: 1,
                 marginBottom: 6,
               }}>{s.val}</div>
               <div style={{
@@ -459,8 +460,8 @@ function Events() {
   const refG = useReveal(80);
   const { isMobile, isTablet } = useBreakpoint();
   return (
-    <section id="eventos" style={{ backgroundColor: C.black, padding: isMobile ? "64px 0" : "100px 0" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : "0 40px" }}>
+    <section id="eventos" style={{ backgroundColor: C.black, padding: isMobile ? "64px 0" : isTablet ? "80px 0" : "100px 0" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : isTablet ? "0 32px" : "0 40px" }}>
 
         <div ref={refH} className="reveal" style={{
           display: "flex", alignItems: "flex-end",
@@ -488,7 +489,7 @@ function Events() {
           border: `1px solid ${C.borderHi}`,
           overflow: "hidden", marginBottom: 3,
         }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 320 : 520, backgroundColor: "#f0a800" }}>
+          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 420 : 520, backgroundColor: "#f0a800" }}>
             <Image
               src="/CUMBIASINFRONTERAS.png"
               alt="Cumbia Sin Fronteras · 1 de Agosto"
@@ -499,7 +500,7 @@ function Events() {
 
           <div style={{
             backgroundColor: C.blackCard,
-            padding: isMobile ? "28px 24px" : "48px 44px",
+            padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px",
             display: "flex", flexDirection: "column", justifyContent: "space-between",
           }}>
             <div>
@@ -570,7 +571,7 @@ function Events() {
           border: `1px solid ${C.borderHi}`,
           overflow: "hidden", marginBottom: 3,
         }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 320 : 480, backgroundColor: "#0d0d0d" }}>
+          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#0d0d0d" }}>
             <Image
               src="/Evento29Julio.jpeg"
               alt="GIANNY En Vivo · 31 de Julio"
@@ -581,7 +582,7 @@ function Events() {
 
           <div style={{
             backgroundColor: C.blackCard,
-            padding: isMobile ? "28px 24px" : "48px 44px",
+            padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px",
             display: "flex", flexDirection: "column", justifyContent: "space-between",
           }}>
             <div>
@@ -1132,7 +1133,7 @@ function GalleryCard({
       style={{
         position: "relative",
         gridRow: tall ? "1 / 3" : "auto",
-        minHeight: tall ? 480 : 240,
+        minHeight: tall ? 480 : 200,
         cursor: "pointer", overflow: "hidden",
         border: `1px solid ${hov ? C.borderHi : C.border}`,
         transition: "border-color 0.25s",
@@ -1204,8 +1205,8 @@ function Gallery() {
   }, []);
 
   return (
-    <section id="galeria" style={{ backgroundColor: C.blackSoft, padding: isMobile ? "64px 0" : "100px 0" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : "0 40px" }}>
+    <section id="galeria" style={{ backgroundColor: C.blackSoft, padding: isMobile ? "64px 0" : isTablet ? "80px 0" : "100px 0" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : isTablet ? "0 32px" : "0 40px" }}>
 
         <div ref={ref} className="reveal" style={{ marginBottom: isMobile ? 36 : 56 }}>
           <Label>Galería</Label>
@@ -1338,7 +1339,7 @@ function Gallery() {
 /* ════════════════════════════ ESPACIO ════════════════════════════ */
 function Espacio() {
   const refH = useReveal(0);
-  const { isMobile, isTablet } = useBreakpoint();
+  const { isMobile, isTablet, isSmallMobile } = useBreakpoint();
 
   const TIPOS = [
     {
@@ -1362,8 +1363,8 @@ function Espacio() {
   ];
 
   return (
-    <section id="espacio" style={{ backgroundColor: C.black, padding: isMobile ? "64px 0" : "100px 0" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : "0 40px" }}>
+    <section id="espacio" style={{ backgroundColor: C.black, padding: isMobile ? "64px 0" : isTablet ? "80px 0" : "100px 0" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : isTablet ? "0 32px" : "0 40px" }}>
 
         <div ref={refH} className="reveal" style={{
           display: "flex", alignItems: "flex-end",
@@ -1388,7 +1389,7 @@ function Espacio() {
 
         <div style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "repeat(3,1fr)",
+          gridTemplateColumns: isMobile || isTablet ? "1fr" : "repeat(3,1fr)",
           gap: 3,
         }}>
           {TIPOS.map((t, i) => {
@@ -1437,19 +1438,20 @@ function Espacio() {
           border: `1px solid ${C.border}`,
           padding: isMobile ? "28px 24px" : "32px 44px",
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)",
-          gap: isMobile ? 24 : 0,
+          gridTemplateColumns: isMobile || isTablet ? "1fr 1fr" : "repeat(4,1fr)",
+          gap: isMobile || isTablet ? 16 : 0,
         }}>
           {[
             "+300 paradas", "Sonido", "Barra", "Quito",
           ].map((d, i) => (
             <div key={d} style={{
               display: "flex", flexDirection: "column", gap: 4,
-              borderLeft: (!isMobile && i > 0) ? `1px solid ${C.border}` : "none",
-              paddingLeft: (!isMobile && i > 0) ? 40 : 0,
+              borderLeft: (!isMobile && !isTablet && i > 0) ? `1px solid ${C.border}` : "none",
+              paddingLeft: (!isMobile && !isTablet && i > 0) ? 40 : 0,
             }}>
               <span style={{
-                fontFamily: H, fontWeight: 900, fontSize: 36,
+                fontFamily: H, fontWeight: 900,
+                fontSize: isSmallMobile ? 22 : isMobile ? 26 : isTablet ? 30 : 36,
                 color: C.gold, lineHeight: 1,
                 textTransform: "uppercase",
               }}>{d}</span>
@@ -1464,13 +1466,13 @@ function Espacio() {
 /* ════════════════════════════ BOOKING ════════════════════════════ */
 function Booking() {
   const ref = useReveal(0);
-  const { isMobile, isTablet } = useBreakpoint();
+  const { isMobile, isTablet, isSmallMobile } = useBreakpoint();
 
   return (
     <section id="booking" style={{
       position: "relative",
       backgroundColor: C.brown,
-      padding: isMobile ? "64px 0" : "100px 0",
+      padding: isMobile ? "64px 0" : isTablet ? "80px 0" : "100px 0",
       overflow: "hidden",
     }}>
       {/* Ghost text */}
@@ -1489,7 +1491,7 @@ function Booking() {
 
       <div ref={ref} className="reveal" style={{
         maxWidth: 1280, margin: "0 auto",
-        padding: isMobile ? "0 20px" : "0 40px",
+        padding: isMobile ? "0 20px" : isTablet ? "0 32px" : "0 40px",
         position: "relative", zIndex: 1,
       }}>
         <div style={{
@@ -1526,11 +1528,14 @@ function Booking() {
                 { label: "Contacto",     val: "WhatsApp directo" },
               ].map((row) => (
                 <div key={row.label} style={{
-                  display: "flex", justifyContent: "space-between", alignItems: "center",
-                  padding: "14px 20px",
+                  display: "flex",
+                  flexDirection: isSmallMobile ? "column" : "row",
+                  justifyContent: "space-between",
+                  alignItems: isSmallMobile ? "flex-start" : "center",
+                  padding: isMobile ? "12px 16px" : "14px 20px",
                   backgroundColor: "rgba(244,236,220,0.04)",
                   border: `1px solid rgba(244,236,220,0.07)`,
-                  gap: 16,
+                  gap: isSmallMobile ? 4 : 16,
                 }}>
                   <span style={{
                     fontFamily: H, fontWeight: 700, fontSize: 10,
@@ -1538,9 +1543,10 @@ function Booking() {
                     color: C.muted, flexShrink: 0,
                   }}>{row.label}</span>
                   <span style={{
-                    fontFamily: H, fontWeight: 800, fontSize: 16,
+                    fontFamily: H, fontWeight: 800,
+                    fontSize: isSmallMobile ? 13 : isMobile ? 14 : 16,
                     textTransform: "uppercase", color: C.cream,
-                    textAlign: "right",
+                    textAlign: isSmallMobile ? "left" : "right",
                   }}>{row.val}</span>
                 </div>
               ))}
@@ -1633,8 +1639,8 @@ function Merch() {
   const ref = useReveal(0);
   const { isMobile, isTablet } = useBreakpoint();
   return (
-    <section id="merch" style={{ backgroundColor: C.blackSoft, padding: isMobile ? "64px 0" : "100px 0" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : "0 40px" }}>
+    <section id="merch" style={{ backgroundColor: C.blackSoft, padding: isMobile ? "64px 0" : isTablet ? "80px 0" : "100px 0" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : isTablet ? "0 32px" : "0 40px" }}>
         <div ref={ref} className="reveal" style={{
           display: "flex", alignItems: "flex-end",
           justifyContent: "space-between", marginBottom: isMobile ? 32 : 56, flexWrap: "wrap", gap: 20,
@@ -1724,8 +1730,8 @@ function Location() {
   const ref = useReveal(0);
 
   return (
-    <section id="ubicacion" style={{ backgroundColor: C.black, borderTop: `1px solid ${C.border}`, padding: isMobile ? "64px 0" : "100px 0" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : "0 40px" }}>
+    <section id="ubicacion" style={{ backgroundColor: C.black, borderTop: `1px solid ${C.border}`, padding: isMobile ? "64px 0" : isTablet ? "80px 0" : "100px 0" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : isTablet ? "0 32px" : "0 40px" }}>
       <div style={{
         display: "grid",
         gridTemplateColumns: isMobile || isTablet ? "1fr" : "1fr 1fr",
@@ -1857,8 +1863,8 @@ function Contact() {
   }
 
   return (
-    <section id="contacto" style={{ backgroundColor: C.blackSoft, padding: isMobile ? "64px 0" : "100px 0", borderTop: `1px solid ${C.border}` }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : "0 40px" }}>
+    <section id="contacto" style={{ backgroundColor: C.blackSoft, padding: isMobile ? "64px 0" : isTablet ? "80px 0" : "100px 0", borderTop: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : isTablet ? "0 32px" : "0 40px" }}>
         <div ref={ref} className="reveal" style={{
           display: "grid", gridTemplateColumns: isMobile || isTablet ? "1fr" : "1fr 1fr",
           gap: isMobile ? 40 : 96, alignItems: "start",
