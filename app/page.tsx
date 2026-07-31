@@ -1667,7 +1667,7 @@ function Merch() {
             </h2>
           </div>
           <p style={{ fontFamily: B, fontSize: 14, color: C.muted, maxWidth: 260, lineHeight: 1.7 }}>
-            Piezas limitadas para los que viven la cultura. Lanzamiento pronto.
+            Piezas limitadas.<br />Lanzamiento pronto.
           </p>
         </div>
 
