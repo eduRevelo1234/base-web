@@ -401,7 +401,7 @@ function Hero() {
           {[
             { val: "+300",         lbl: "Personas",        sub: "Paradas" },
             { val: "Conciertos",  lbl: "Fiestas",          sub: "Corporativos" },
-            { val: "UIO",         lbl: "Quito, Ecuador",   sub: "Francisco Salazar y José Tamayo" },
+            { val: "QUITO",       lbl: "Ecuador",            sub: "Francisco Salazar y José Tamayo" },
           ].map((s) => (
             <div key={s.lbl} style={{
               backgroundColor: C.blackCard,
