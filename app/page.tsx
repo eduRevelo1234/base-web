@@ -319,24 +319,7 @@ function Hero() {
       display: "flex", alignItems: "center",
       overflow: "hidden",
     }}>
-      {/* Background image with overlay */}
-      <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-        <Image
-          src="/event-julio25.jpeg"
-          alt="Evento en BASE"
-          fill priority
-          style={{ objectFit: "cover", objectPosition: "center top", opacity: 0.22 }}
-          sizes="100vw"
-        />
-        <div style={{
-          position: "absolute", inset: 0,
-          background: "linear-gradient(to right, rgba(17,17,17,0.97) 50%, rgba(17,17,17,0.6) 100%)",
-        }} />
-        <div style={{
-          position: "absolute", inset: 0,
-          background: "linear-gradient(to top, rgba(17,17,17,1) 0%, transparent 60%)",
-        }} />
-      </div>
+      {/* Subtle gold glow — no background image */}
 
       {/* Gold glow */}
       <div style={{
@@ -571,7 +554,7 @@ function Events() {
           border: `1px solid ${C.borderHi}`,
           overflow: "hidden", marginBottom: 3,
         }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#F5C200" }}>
+          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#2e2e2e" }}>
             <Image
               src="/events/beltran_serko/BELTRAN_SERKO_1080X1350.png"
               alt="Jony Beltrán & Serko Fu · 6 de Agosto"
