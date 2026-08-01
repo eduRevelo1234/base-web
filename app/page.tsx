@@ -456,7 +456,8 @@ function Marquee() {
 function Events() {
   const refH = useReveal(0);
   const refC = useReveal(120);
-  const refG = useReveal(80);
+  const refB = useReveal(80);
+  const refD = useReveal(80);
   const { isMobile, isTablet } = useBreakpoint();
   return (
     <section id="eventos" style={{ backgroundColor: C.black, padding: isMobile ? "64px 0" : isTablet ? "80px 0" : "100px 0" }}>
@@ -563,22 +564,21 @@ function Events() {
           </div>
         </div>
 
-        {/* Segundo evento — GIANNY */}
-        <div ref={refG} className="reveal" style={{
+        {/* Evento — Jony Beltrán & Serko Fu */}
+        <div ref={refB} className="reveal" style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
           border: `1px solid ${C.borderHi}`,
           overflow: "hidden", marginBottom: 3,
         }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#0d0d0d" }}>
+          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#F5C200" }}>
             <Image
-              src="/Evento29Julio.jpeg"
-              alt="GIANNY En Vivo · 31 de Julio"
+              src="/events/beltran_serko/BELTRAN_SERKO_1080X1350.png"
+              alt="Jony Beltrán & Serko Fu · 6 de Agosto"
               fill style={{ objectFit: "contain" }}
               sizes="(max-width:900px) 100vw, 60vw"
             />
           </div>
-
           <div style={{
             backgroundColor: C.blackCard,
             padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px",
@@ -591,94 +591,108 @@ function Events() {
                 fontFamily: H, fontWeight: 800, fontSize: 10,
                 letterSpacing: "0.22em", textTransform: "uppercase",
                 padding: "5px 12px", marginBottom: 32,
-              }}>
-                Próximo evento
-              </span>
-
+              }}>Próximo evento</span>
               <h3 style={{
                 fontFamily: H, fontWeight: 900,
-                fontSize: "clamp(38px,4vw,60px)", lineHeight: 0.9,
+                fontSize: "clamp(32px,4vw,56px)", lineHeight: 0.9,
                 textTransform: "uppercase", color: C.cream, marginBottom: 12,
-              }}>
-                GIANNY<br />EN VIVO
-              </h3>
-
-              <p style={{
-                fontFamily: B, fontSize: 13, color: C.gold,
-                letterSpacing: "0.06em", marginBottom: 20,
-              }}>
-                Promotor: Mad Max - Mala Mia
+              }}>JONY BELTRÁN<br />&amp; SERKO FU</h3>
+              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>
+                Batallas de Freestyle y Rap en Vivo
               </p>
-
               <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
             </div>
-
             <div>
-              <div style={{
-                display: "flex", flexDirection: "column", gap: 14,
-                borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32,
-              }}>
-                {[
-                  ["Fecha", "Vie 31 de Julio"],
-                  ["Hora",  "7:00 pm"],
-                  ["Lugar", "BASE · Quito"],
-                ].map(([k,v]) => (
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
+                {[["Fecha","Jue 6 de Agosto"],["Lugar","BASE · Quito"]].map(([k,v]) => (
                   <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                    <span style={{
-                      fontFamily: H, fontWeight: 700, fontSize: 10,
-                      letterSpacing: "0.22em", textTransform: "uppercase",
-                      color: C.muted, width: 52, flexShrink: 0, paddingTop: 3,
-                    }}>{k}</span>
-                    <span style={{
-                      fontFamily: H, fontWeight: 900, fontSize: 17,
-                      textTransform: "uppercase", color: C.cream, lineHeight: 1.2,
-                    }}>{v}</span>
+                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
+                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
                   </div>
                 ))}
               </div>
-              <a href={WA_URL} target="_blank" rel="noopener noreferrer" style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                fontFamily: H, fontWeight: 900, fontSize: 13,
-                letterSpacing: "0.14em", textTransform: "uppercase",
-                color: C.black, backgroundColor: C.gold,
-                padding: "14px 32px", textDecoration: "none",
-              }}>
+              <a href={WA_URL} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: H, fontWeight: 900, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase", color: C.black, backgroundColor: C.gold, padding: "14px 32px", textDecoration: "none" }}>
                 Más info →
               </a>
             </div>
           </div>
         </div>
 
-        {/* Evento pasado */}
-        <div style={{
-          backgroundColor: C.blackCard, border: `1px solid ${C.border}`,
-          padding: isMobile ? "20px 20px" : "20px 36px",
+        {/* Evento — DJ 1sak */}
+        <div ref={refD} className="reveal" style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "auto 1fr auto",
-          alignItems: "center", gap: isMobile ? 12 : 24, marginBottom: 3,
-          opacity: 0.55,
+          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
+          border: `1px solid ${C.borderHi}`,
+          overflow: "hidden", marginBottom: 3,
         }}>
-          <span style={{
-            fontFamily: H, fontWeight: 800, fontSize: 10,
-            letterSpacing: "0.22em", textTransform: "uppercase",
-            color: C.muted,
-            backgroundColor: "rgba(244,236,220,0.06)",
-            border: `1px solid rgba(244,236,220,0.1)`,
-            padding: "4px 10px", whiteSpace: "nowrap",
-          }}>Evento pasado</span>
-          <div>
-            <span style={{
-              fontFamily: H, fontWeight: 900, fontSize: isMobile ? 20 : 26,
-              textTransform: "uppercase", color: C.cream,
-            }}>
-              La Velada del Año VI · Night Party
-            </span>
+          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#E8D8B8" }}>
+            <Image
+              src="/events/dj1sak_Quito/djisak_1080X1350.png"
+              alt="DJ 1sak · 15 de Agosto"
+              fill style={{ objectFit: "contain" }}
+              sizes="(max-width:900px) 100vw, 60vw"
+            />
           </div>
-          <span style={{
-            fontFamily: H, fontWeight: 700, fontSize: 13,
-            color: C.muted, whiteSpace: "nowrap",
-          }}>25 Jul 2026</span>
+          <div style={{
+            backgroundColor: C.blackCard,
+            padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px",
+            display: "flex", flexDirection: "column", justifyContent: "space-between",
+          }}>
+            <div>
+              <span style={{
+                display: "inline-block", backgroundColor: "transparent",
+                border: `1px solid ${C.gold}`, color: C.gold,
+                fontFamily: H, fontWeight: 800, fontSize: 10,
+                letterSpacing: "0.22em", textTransform: "uppercase",
+                padding: "5px 12px", marginBottom: 32,
+              }}>Próximo evento</span>
+              <h3 style={{
+                fontFamily: H, fontWeight: 900,
+                fontSize: "clamp(38px,4vw,60px)", lineHeight: 0.9,
+                textTransform: "uppercase", color: C.cream, marginBottom: 12,
+              }}>DJ 1SAK</h3>
+              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>
+                Desde México · LNG/SHT · Galaxia Cero
+              </p>
+              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
+              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>
+                Entrada gratuita · Venta de merch oficial LNG/SHT
+              </p>
+            </div>
+            <div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
+                {[["Fecha","Sáb 15 de Agosto"],["Lugar","BASE · Quito"]].map(([k,v]) => (
+                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
+                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              <a href={WA_URL} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: H, fontWeight: 900, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase", color: C.black, backgroundColor: C.gold, padding: "14px 32px", textDecoration: "none" }}>
+                Más info →
+              </a>
+            </div>
+          </div>
         </div>
+
+        {/* Eventos pasados */}
+        {[
+          ["GIANNY EN VIVO · Promotor Mad Max",    "31 Jul 2026"],
+          ["La Velada del Año VI · Night Party",   "25 Jul 2026"],
+        ].map(([name, date]) => (
+          <div key={name} style={{
+            backgroundColor: C.blackCard, border: `1px solid ${C.border}`,
+            padding: isMobile ? "20px 20px" : "20px 36px",
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "auto 1fr auto",
+            alignItems: "center", gap: isMobile ? 12 : 24, marginBottom: 3,
+            opacity: 0.5,
+          }}>
+            <span style={{ fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, backgroundColor: "rgba(244,236,220,0.06)", border: `1px solid rgba(244,236,220,0.1)`, padding: "4px 10px", whiteSpace: "nowrap" }}>Evento pasado</span>
+            <span style={{ fontFamily: H, fontWeight: 900, fontSize: isMobile ? 18 : 24, textTransform: "uppercase", color: C.cream }}>{name}</span>
+            <span style={{ fontFamily: H, fontWeight: 700, fontSize: 13, color: C.muted, whiteSpace: "nowrap" }}>{date}</span>
+          </div>
+        ))}
 
         {/* Más eventos strip */}
         <div style={{
