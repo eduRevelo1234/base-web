@@ -1183,11 +1183,13 @@ function Gallery() {
   const ref = useReveal(0);
 
   const IMGS = [
-    { src: "/fotosBase/base_003.jpeg", alt: "Fachada de BASE de noche",     label: "El venue" },
-    { src: "/fotosBase/base_001.jpeg", alt: "Pantalla LED gigante en BASE", label: "Pantalla LED" },
-    { src: "/fotosBase/base_004.jpeg", alt: "Logo BASE en el edificio",     label: "BASE" },
-    { src: "/event-julio25.jpeg",      alt: "Velada del Año VI · Night Party",   label: "25 Jul 2026" },
-    { src: "/CUMBIASINFRONTERAS.png",  alt: "Cumbia Sin Fronteras · 1 Ago",      label: "1 Ago 2026" },
+    { src: "/fotos_base/DSC06294.JPG",  alt: "Interior de BASE",              label: "El venue"    },
+    { src: "/fotos_base/DSC06265.JPG",  alt: "BASE en acción",                label: "Ambiente"    },
+    { src: "/fotos_base/DSC06275.jpeg", alt: "Escenario de BASE",             label: "Escenario"   },
+    { src: "/fotos_base/DSC06291.JPG",  alt: "Espacio de BASE",               label: "El espacio"  },
+    { src: "/fotos_base/DSC06314.JPG",  alt: "BASE de noche",                 label: "Noche"       },
+    { src: "/fotos_base/DSC06315.JPG",  alt: "Detalles de BASE",              label: "Detalles"    },
+    { src: "/CUMBIASINFRONTERAS.png",   alt: "Cumbia Sin Fronteras · 1 Ago",  label: "1 Ago 2026"  },
   ];
 
   useEffect(() => {
@@ -1221,16 +1223,13 @@ function Gallery() {
           gridTemplateRows: "auto",
           gap: 3,
         }}>
-          {/* Foto 1 — fachada, ocupa 2 filas en desktop */}
           <GalleryCard img={IMGS[0]} idx={0} tall={!isMobile && !isTablet} onOpen={setLbIndex} />
-          {/* Foto 2 — pantalla LED */}
           <GalleryCard img={IMGS[1]} idx={1} onOpen={setLbIndex} />
-          {/* Foto 3 — logo edificio */}
           <GalleryCard img={IMGS[2]} idx={2} onOpen={setLbIndex} />
-          {/* Foto 4 — flyer evento */}
           <GalleryCard img={IMGS[3]} idx={3} onOpen={setLbIndex} />
-          {/* Foto 5 — cumbia */}
-          <GalleryCard img={IMGS[4]} idx={4} onOpen={setLbIndex} contained />
+          <GalleryCard img={IMGS[4]} idx={4} onOpen={setLbIndex} />
+          <GalleryCard img={IMGS[5]} idx={5} onOpen={setLbIndex} />
+          <GalleryCard img={IMGS[6]} idx={6} onOpen={setLbIndex} contained />
         </div>
 
         <p style={{
