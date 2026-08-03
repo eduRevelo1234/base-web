@@ -1093,7 +1093,7 @@ function Gallery() {
     { src: "/fotos_base/DSC06291.JPG",  alt: "Espacio de BASE",               label: "El espacio"  },
     { src: "/fotos_base/DSC06314.JPG",  alt: "BASE de noche",                 label: "Noche"       },
     { src: "/fotos_base/DSC06315.JPG",  alt: "Detalles de BASE",              label: "Detalles"    },
-    { src: "/CUMBIASINFRONTERAS.png",   alt: "Cumbia Sin Fronteras · 1 Ago",  label: "1 Ago 2026"  },
+    { src: "/fotos_base/base_004.jpeg",  alt: "Fachada de BASE",               label: "El venue"    },
   ];
 
   useEffect(() => {
@@ -1133,7 +1133,7 @@ function Gallery() {
           <GalleryCard img={IMGS[3]} idx={3} onOpen={setLbIndex} />
           <GalleryCard img={IMGS[4]} idx={4} onOpen={setLbIndex} />
           <GalleryCard img={IMGS[5]} idx={5} onOpen={setLbIndex} />
-          <GalleryCard img={IMGS[6]} idx={6} onOpen={setLbIndex} contained />
+          <GalleryCard img={IMGS[6]} idx={6} onOpen={setLbIndex} />
         </div>
 
         <p style={{
