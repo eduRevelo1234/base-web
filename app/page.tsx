@@ -465,96 +465,14 @@ function Events() {
           </p>
         </div>
 
-        {/* Featured event card — Cumbia Sin Fronteras */}
+        {/* Featured event — Jony Beltrán & Serko Fu */}
         <div ref={refC} className="reveal" style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
           border: `1px solid ${C.borderHi}`,
           overflow: "hidden", marginBottom: 3,
         }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 420 : 520, backgroundColor: "#f0a800" }}>
-            <Image
-              src="/CUMBIASINFRONTERAS.png"
-              alt="Cumbia Sin Fronteras · 1 de Agosto"
-              fill style={{ objectFit: "contain" }}
-              sizes="(max-width:900px) 100vw, 60vw"
-            />
-          </div>
-
-          <div style={{
-            backgroundColor: C.blackCard,
-            padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px",
-            display: "flex", flexDirection: "column", justifyContent: "space-between",
-          }}>
-            <div>
-              <span style={{
-                display: "inline-block", backgroundColor: C.gold, color: C.black,
-                fontFamily: H, fontWeight: 800, fontSize: 10,
-                letterSpacing: "0.22em", textTransform: "uppercase",
-                padding: "5px 12px", marginBottom: 32,
-              }}>
-                Próximo evento
-              </span>
-
-              <h3 style={{
-                fontFamily: H, fontWeight: 900,
-                fontSize: "clamp(38px,4vw,60px)", lineHeight: 0.9,
-                textTransform: "uppercase", color: C.cream, marginBottom: 12,
-              }}>
-                CUMBIA<br />SIN<br />FRONTERAS
-              </h3>
-
-              <p style={{
-                fontFamily: B, fontSize: 13, color: C.gold,
-                letterSpacing: "0.06em", marginBottom: 20,
-              }}>
-                Show en vivo de La Bochinchera
-              </p>
-
-              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
-
-              <p style={{ fontFamily: B, fontSize: 15, lineHeight: 1.75, color: C.muted }}>
-                Host de la fiesta MARIACHI · DJ CUCURUCHO.X<br />
-                Beneficios y promociones por grupos.
-              </p>
-            </div>
-
-            <div>
-              <div style={{
-                display: "flex", flexDirection: "column", gap: 14,
-                borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32,
-              }}>
-                {[
-                  ["Fecha", "Sáb 1 de Agosto"],
-                  ["Hora",  "8:00 pm"],
-                  ["Lugar", "BASE · Quito"],
-                ].map(([k,v]) => (
-                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                    <span style={{
-                      fontFamily: H, fontWeight: 700, fontSize: 10,
-                      letterSpacing: "0.22em", textTransform: "uppercase",
-                      color: C.muted, width: 52, flexShrink: 0, paddingTop: 3,
-                    }}>{k}</span>
-                    <span style={{
-                      fontFamily: H, fontWeight: 900, fontSize: 17,
-                      textTransform: "uppercase", color: C.cream, lineHeight: 1.2,
-                    }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-              <GoldBtn onClick={openReservas}>Reservar lugar →</GoldBtn>
-            </div>
-          </div>
-        </div>
-
-        {/* Evento — Jony Beltrán & Serko Fu */}
-        <div ref={refB} className="reveal" style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
-          border: `1px solid ${C.borderHi}`,
-          overflow: "hidden", marginBottom: 3,
-        }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#2e2e2e" }}>
+          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 420 : 520, backgroundColor: "#1a1a1a" }}>
             <Image
               src="/events/beltran_serko/BELTRAN_SERKO_1080X1350.png"
               alt="Jony Beltrán & Serko Fu · 6 de Agosto"
@@ -569,15 +487,14 @@ function Events() {
           }}>
             <div>
               <span style={{
-                display: "inline-block", backgroundColor: "transparent",
-                border: `1px solid ${C.gold}`, color: C.gold,
+                display: "inline-block", backgroundColor: C.gold, color: C.black,
                 fontFamily: H, fontWeight: 800, fontSize: 10,
                 letterSpacing: "0.22em", textTransform: "uppercase",
                 padding: "5px 12px", marginBottom: 32,
               }}>Próximo evento</span>
               <h3 style={{
                 fontFamily: H, fontWeight: 900,
-                fontSize: "clamp(32px,4vw,56px)", lineHeight: 0.9,
+                fontSize: "clamp(36px,4vw,60px)", lineHeight: 0.9,
                 textTransform: "uppercase", color: C.cream, marginBottom: 12,
               }}>JONY BELTRÁN<br />&amp; SERKO FU</h3>
               <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>
@@ -602,13 +519,13 @@ function Events() {
         </div>
 
         {/* Evento — DJ 1sak */}
-        <div ref={refD} className="reveal" style={{
+        <div ref={refB} className="reveal" style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
           border: `1px solid ${C.borderHi}`,
           overflow: "hidden", marginBottom: 3,
         }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#E8D8B8" }}>
+          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
             <Image
               src="/events/dj1sak_Quito/djisak_1080X1350.png"
               alt="DJ 1sak · 15 de Agosto"
@@ -622,25 +539,11 @@ function Events() {
             display: "flex", flexDirection: "column", justifyContent: "space-between",
           }}>
             <div>
-              <span style={{
-                display: "inline-block", backgroundColor: "transparent",
-                border: `1px solid ${C.gold}`, color: C.gold,
-                fontFamily: H, fontWeight: 800, fontSize: 10,
-                letterSpacing: "0.22em", textTransform: "uppercase",
-                padding: "5px 12px", marginBottom: 32,
-              }}>Próximo evento</span>
-              <h3 style={{
-                fontFamily: H, fontWeight: 900,
-                fontSize: "clamp(38px,4vw,60px)", lineHeight: 0.9,
-                textTransform: "uppercase", color: C.cream, marginBottom: 12,
-              }}>DJ 1SAK</h3>
-              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>
-                Desde México · LNG/SHT · Galaxia Cero
-              </p>
+              <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
+              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(38px,4vw,60px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>DJ 1SAK</h3>
+              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Desde México · LNG/SHT · Galaxia Cero</p>
               <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
-              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>
-                Entrada gratuita · Venta de merch oficial LNG/SHT
-              </p>
+              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Entrada gratuita · Venta de merch oficial LNG/SHT</p>
             </div>
             <div>
               <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
@@ -660,8 +563,9 @@ function Events() {
 
         {/* Eventos pasados */}
         {[
-          ["GIANNY EN VIVO · Promotor Mad Max",    "31 Jul 2026"],
-          ["La Velada del Año VI · Night Party",   "25 Jul 2026"],
+          ["Cumbia Sin Fronteras · La Bochinchera", "1 Ago 2026"],
+          ["GIANNY EN VIVO · Promotor Mad Max",     "31 Jul 2026"],
+          ["La Velada del Año VI · Night Party",    "25 Jul 2026"],
         ].map(([name, date]) => (
           <div key={name} style={{
             backgroundColor: C.blackCard, border: `1px solid ${C.border}`,
