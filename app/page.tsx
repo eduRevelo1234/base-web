@@ -60,6 +60,24 @@ function useReveal(delay = 0) {
   return ref;
 }
 
+function useCountdown(target: Date) {
+  const calc = () => {
+    const diff = target.getTime() - Date.now();
+    if (diff <= 0) return { d: 0, h: 0, m: 0, s: 0, over: true };
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    return { d, h, m, s, over: false };
+  };
+  const [t, setT] = useState(calc);
+  useEffect(() => {
+    const id = setInterval(() => setT(calc()), 1000);
+    return () => clearInterval(id);
+  }, [target.getTime()]);
+  return t;
+}
+
 function useScrolled(px = 40) {
   const [on, setOn] = useState(false);
   useEffect(() => {
@@ -436,6 +454,40 @@ function Marquee() {
 }
 
 /* ════════════════════════════ EVENTS ════════════════════════════ */
+function ClasicosCountdown() {
+  const { d, h, m, s, over } = useCountdown(new Date("2026-08-29T20:00:00-05:00"));
+  if (over) return null;
+  const units = [["días", d], ["hrs", h], ["min", m], ["seg", s]] as const;
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <p style={{
+        fontFamily: "var(--font-h)", fontWeight: 700, fontSize: 9,
+        letterSpacing: "0.28em", textTransform: "uppercase",
+        color: "var(--gold)", marginBottom: 10,
+      }}>Faltan</p>
+      <div style={{ display: "flex", gap: 8 }}>
+        {units.map(([lbl, val]) => (
+          <div key={lbl} style={{
+            flex: 1, backgroundColor: "rgba(223,159,0,0.08)",
+            border: "1px solid rgba(223,159,0,0.25)",
+            padding: "10px 6px", textAlign: "center",
+          }}>
+            <div style={{
+              fontFamily: "var(--font-h)", fontWeight: 900, fontSize: 28,
+              color: "var(--gold)", lineHeight: 1,
+            }}>{String(val).padStart(2, "0")}</div>
+            <div style={{
+              fontFamily: "var(--font-h)", fontWeight: 700, fontSize: 9,
+              letterSpacing: "0.18em", textTransform: "uppercase",
+              color: "rgba(244,236,220,0.5)", marginTop: 4,
+            }}>{lbl}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Events() {
   const refH = useReveal(0);
   const refC = useReveal(120);
@@ -532,7 +584,9 @@ function Events() {
               <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Dos estilos, una sola fiesta. Bebidas y picaditas.<br />Preventa $7 · En puerta $10</p>
             </div>
             <div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
+              {/* Countdown */}
+              <ClasicosCountdown />
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 24, marginBottom: 32 }}>
                 {[["Fecha","Sáb 29 de Agosto"],["Hora","8:00 pm"],["Lugar","BASE · Quito"]].map(([k,v]) => (
                   <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
                     <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
