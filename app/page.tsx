@@ -465,61 +465,8 @@ function Events() {
           </p>
         </div>
 
-        {/* Featured event — Jony Beltrán & Serko Fu */}
+        {/* Featured event — DJ 1sak */}
         <div ref={refC} className="reveal" style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
-          border: `1px solid ${C.borderHi}`,
-          overflow: "hidden", marginBottom: 3,
-        }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 420 : 520, backgroundColor: "#1a1a1a" }}>
-            <Image
-              src="/events/beltran_serko/BELTRAN_SERKO_1080X1350.png"
-              alt="Jony Beltrán & Serko Fu · 6 de Agosto"
-              fill style={{ objectFit: "contain" }}
-              sizes="(max-width:900px) 100vw, 60vw"
-            />
-          </div>
-          <div style={{
-            backgroundColor: C.blackCard,
-            padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px",
-            display: "flex", flexDirection: "column", justifyContent: "space-between",
-          }}>
-            <div>
-              <span style={{
-                display: "inline-block", backgroundColor: C.gold, color: C.black,
-                fontFamily: H, fontWeight: 800, fontSize: 10,
-                letterSpacing: "0.22em", textTransform: "uppercase",
-                padding: "5px 12px", marginBottom: 32,
-              }}>Próximo evento</span>
-              <h3 style={{
-                fontFamily: H, fontWeight: 900,
-                fontSize: "clamp(36px,4vw,60px)", lineHeight: 0.9,
-                textTransform: "uppercase", color: C.cream, marginBottom: 12,
-              }}>JONY BELTRÁN<br />&amp; SERKO FU</h3>
-              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>
-                Batallas de Freestyle y Rap en Vivo
-              </p>
-              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
-            </div>
-            <div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
-                {[["Fecha","Jue 6 de Agosto"],["Lugar","BASE · Quito"]].map(([k,v]) => (
-                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
-                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-              <a href={WA_URL} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: H, fontWeight: 900, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase", color: C.black, backgroundColor: C.gold, padding: "14px 32px", textDecoration: "none" }}>
-                Más info →
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Evento — DJ 1sak */}
-        <div ref={refB} className="reveal" style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
           border: `1px solid ${C.borderHi}`,
@@ -539,7 +486,7 @@ function Events() {
             display: "flex", flexDirection: "column", justifyContent: "space-between",
           }}>
             <div>
-              <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
+              <span style={{ display: "inline-block", backgroundColor: C.gold, color: C.black, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
               <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(38px,4vw,60px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>DJ 1SAK</h3>
               <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Desde México · LNG/SHT · Galaxia Cero</p>
               <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
@@ -561,11 +508,51 @@ function Events() {
           </div>
         </div>
 
+        {/* Evento — Clásicos VS Cumbia */}
+        <div ref={refB} className="reveal" style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
+          border: `1px solid ${C.borderHi}`,
+          overflow: "hidden", marginBottom: 3,
+        }}>
+          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
+            <Image
+              src="/events/ClasicosVSCumbia/flyer-hd.png"
+              alt="Clásicos VS Cumbia · 29 de Agosto"
+              fill style={{ objectFit: "contain" }}
+              sizes="(max-width:900px) 100vw, 60vw"
+            />
+          </div>
+          <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
+              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(34px,4vw,56px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>CLÁSICOS<br />VS CUMBIA</h3>
+              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Back in Time · Cumbia Capital</p>
+              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
+              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Dos estilos, una sola fiesta. Bebidas y picaditas.<br />Preventa $7 · En puerta $10</p>
+            </div>
+            <div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
+                {[["Fecha","Sáb 29 de Agosto"],["Hora","8:00 pm"],["Lugar","BASE · Quito"]].map(([k,v]) => (
+                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
+                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              <a href={WA_URL} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: H, fontWeight: 900, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase", color: C.black, backgroundColor: C.gold, padding: "14px 32px", textDecoration: "none" }}>
+                Más info →
+              </a>
+            </div>
+          </div>
+        </div>
+
         {/* Eventos pasados */}
         {[
-          ["Cumbia Sin Fronteras · La Bochinchera", "1 Ago 2026"],
-          ["GIANNY EN VIVO · Promotor Mad Max",     "31 Jul 2026"],
-          ["La Velada del Año VI · Night Party",    "25 Jul 2026"],
+          ["Jony Beltrán & Serko Fu",               "6 Ago 2026"],
+          ["Cumbia Sin Fronteras · La Bochinchera",  "1 Ago 2026"],
+          ["GIANNY EN VIVO · Promotor Mad Max",      "31 Jul 2026"],
+          ["La Velada del Año VI · Night Party",     "25 Jul 2026"],
         ].map(([name, date]) => (
           <div key={name} style={{
             backgroundColor: C.blackCard, border: `1px solid ${C.border}`,
