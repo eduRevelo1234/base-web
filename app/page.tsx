@@ -517,7 +517,7 @@ function Events() {
         }}>
           <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
             <Image
-              src="/events/ClasicosVSCumbia/flyer-hd.png"
+              src="/events/ClasicosVSCumbia/flyer-1080x1350.png"
               alt="Clásicos VS Cumbia · 29 de Agosto"
               fill style={{ objectFit: "contain" }}
               sizes="(max-width:900px) 100vw, 60vw"
