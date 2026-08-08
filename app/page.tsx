@@ -540,7 +540,7 @@ function Events() {
                   </div>
                 ))}
               </div>
-              <a href={`https://wa.me/593996242174?text=${encodeURIComponent("Hola! Me interesa el evento Clásicos VS Cumbia (29 de Agosto en BASE). Soy el promotor Cumbia Capital, quisiera más información.")}`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: H, fontWeight: 900, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase", color: C.black, backgroundColor: C.gold, padding: "14px 32px", textDecoration: "none" }}>
+              <a href={`https://wa.me/593996242174?text=${encodeURIComponent("Hola! Me interesa el evento Clásicos VS Cumbia del 29 de Agosto en BASE. ¿Pueden darme más información sobre preventa y reservas?")}`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: H, fontWeight: 900, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase", color: C.black, backgroundColor: C.gold, padding: "14px 32px", textDecoration: "none" }}>
                 Más info →
               </a>
             </div>
