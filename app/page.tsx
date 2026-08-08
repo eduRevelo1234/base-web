@@ -578,8 +578,7 @@ function Events() {
           <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <div>
               <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
-              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(34px,4vw,56px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>CLÁSICOS<br />VS CUMBIA</h3>
-              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Promotor: Cumbia Capital</p>
+              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(34px,4vw,56px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>CLÁSICOS VS CUMBIA<br /><span style={{ fontSize: "0.5em", color: C.gold, fontWeight: 700, letterSpacing: "0.06em" }}>· Promotor Cumbia Capital</span></h3>
               <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
               <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Dos estilos, una sola fiesta. Bebidas y picaditas.<br />Preventa $7 · En puerta $10</p>
             </div>
