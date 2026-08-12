@@ -40,7 +40,8 @@ function scrollTo(id: string) {
 /* WhatsApp — reemplaza con el número real en formato internacional sin + ni espacios */
 const WA_NUMBER = "593980302389";
 const WA_MSG    = encodeURIComponent("Hola, quiero recibir información para reservar La Base para un evento.");
-const WA_URL    = `https://wa.me/${WA_NUMBER}?text=${WA_MSG}`;
+const WA_BASE   = `https://wa.me/${WA_NUMBER}`;
+const WA_URL    = `${WA_BASE}?text=${WA_MSG}`;
 
 /* ════════════════════════════ HOOKS ════════════════════════════ */
 function useReveal(delay = 0) {
@@ -579,6 +580,7 @@ function Events() {
   const refH = useReveal(0);
   const refC = useReveal(120);
   const refB = useReveal(80);
+  const refA = useReveal(80);
   const [showPast, setShowPast] = useState(false);
   const { isMobile, isTablet } = useBreakpoint();
   return (
@@ -685,6 +687,48 @@ function Events() {
                 <GoldBtn onClick={() => openReservas("clasicos")}>Reservar mi lugar →</GoldBtn>
                 <GoldBtn
                   href={`https://wa.me/593996242174?text=${encodeURIComponent("Hola! Me interesa el evento Clásicos VS Cumbia del 29 de Agosto en BASE. ¿Pueden darme más información sobre preventa y reservas?")}`}
+                  target="_blank" outline
+                >Más info</GoldBtn>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Evento — Homer El Mero Mero (entradas externas, no reserva) */}
+        <div ref={refA} className="reveal" style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
+          border: `1px solid ${C.borderHi}`,
+          overflow: "hidden", marginBottom: 3,
+        }}>
+          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
+            <Image
+              src="/events/Homer_El_Mero_Mero/IMG_0549.JPEG"
+              alt="Homer El Mero Mero · Resurrección Tour 2026 · 4 de Septiembre"
+              fill style={{ objectFit: "contain" }}
+              sizes="(max-width:900px) 100vw, 60vw"
+            />
+          </div>
+          <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
+              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(26px,2.7vw,38px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>HOMER EL MERO MERO<br /><span style={{ fontSize: "0.5em", color: C.gold, fontWeight: 700, letterSpacing: "0.06em" }}>· Resurrección Tour 2026</span></h3>
+              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
+              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Gira internacional en Quito.<br />Entradas en buenplan.com.ec</p>
+            </div>
+            <div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
+                {[["Fecha","Vie 4 de Septiembre"],["Lugar","BASE · Quito"]].map(([k,v]) => (
+                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
+                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <GoldBtn href="https://buenplan.com.ec" target="_blank">Comprar entradas →</GoldBtn>
+                <GoldBtn
+                  href={`${WA_BASE}?text=${encodeURIComponent("Hola! Me interesa el evento Homer El Mero Mero (Resurrección Tour) del 4 de Septiembre en BASE. ¿Pueden darme más información?")}`}
                   target="_blank" outline
                 >Más info</GoldBtn>
               </div>
