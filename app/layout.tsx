@@ -26,7 +26,10 @@ const SITE = "https://www.soylabase.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
-  title: "Base - Distrito Creativo | Venue en Quito",
+  title: {
+    default: "BASE - Distrito Creativo",
+    template: "%s | BASE - Distrito Creativo",
+  },
   description:
     "Venue para conciertos, eventos corporativos, privados y fiestas en Quito. Capacidad para +300 personas. Próximos eventos y reservas.",
   keywords: [
@@ -37,14 +40,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_EC",
     url: SITE,
-    siteName: "BASE",
-    title: "BASE — Un espacio. Todas las experiencias.",
+    siteName: "BASE - Distrito Creativo",
+    title: "BASE - Distrito Creativo",
     description:
       "Venue para conciertos, eventos corporativos, privados y fiestas en Quito. Capacidad para +300 personas.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "BASE — Un espacio. Todas las experiencias.",
+    title: "BASE - Distrito Creativo",
     description:
       "Venue para conciertos, eventos corporativos, privados y fiestas en Quito.",
   },
