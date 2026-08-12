@@ -20,7 +20,9 @@ const barlow = Barlow({
   display: "swap",
 });
 
-const SITE = "https://soylabase.com";
+/* Canónico con www: el apex responde 308 hacia www, así que anunciar el apex
+   hacía que la og:image se sirviera detrás de un redirect. */
+const SITE = "https://www.soylabase.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
@@ -46,6 +48,7 @@ export const metadata: Metadata = {
     description:
       "Venue para conciertos, eventos corporativos, privados y fiestas en Quito.",
   },
+  alternates: { canonical: "/" },
   robots: { index: true, follow: true },
 };
 
