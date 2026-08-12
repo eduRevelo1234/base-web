@@ -1,30 +1,60 @@
 @import "tailwindcss";
 
+/* ══════════════════════════════════════════════════════════════════
+   BRAND TOKENS — values mirror BASE_BRANDBOOK.pdf p.5
+   Keep in sync with the `C` object in app/page.tsx.
+   ══════════════════════════════════════════════════════════════════ */
 :root {
-  --black:       #111111;
+  /* Neutrals */
+  --black:       #111111;  /* page ground (deeper than book charcoal, for contrast) */
   --black-soft:  #181818;
   --black-card:  #1f1f1f;
-  --black-hi:    #262626;
-  --gold:        #df9f00;
+  --charcoal:    #282828;  /* brandbook charcoal */
+  --olive:       #443822;  /* brandbook dark olive brown */
+
+  /* Brand color */
+  --gold:        #df9f00;  /* brandbook amber — primary accent, CTAs only */
   --gold-hover:  #f0ad00;
-  --gold-dim:    rgba(223,159,0,0.10);
+  --ochre:       #c18500;  /* brandbook ochre — secondary accent */
+  --cream:       #f4ecdc;  /* brandbook cream */
+
+  /* Derived */
+  --muted:       rgba(244,236,220,0.65);
+  --muted2:      rgba(244,236,220,0.42);
+  --gold-dim:    rgba(223,159,0,0.08);
   --gold-glow:   rgba(223,159,0,0.06);
-  --brown:       #231806;
-  --cream:       #f4ecdc;
-  --muted:       rgba(244,236,220,0.45);
-  --muted2:      rgba(244,236,220,0.22);
   --border:      rgba(223,159,0,0.12);
   --border-hi:   rgba(223,159,0,0.32);
+  --ochre-border:rgba(193,133,0,0.22);
+
+  /* Heading width axis — Archivo variable `wdth`, widened toward the
+     brandbook's Microgramma *Extended* spec. Barlow (static) ignores it. */
+  --head-wdth: 122;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html  { scroll-behavior: smooth; }
+
+/* The navbar is fixed at 64px — without this, anchor jumps park section
+   headings underneath it. */
+section[id] { scroll-margin-top: 64px; }
 body  {
   background: var(--black);
   color: var(--cream);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  font-variation-settings: "wdth" var(--head-wdth);
 }
+
+/* ── Focus ─────────────────────────────────────────────────────────
+   Every custom control uses `all: unset`, which strips the UA focus
+   ring. Restore a visible one for keyboard users site-wide. */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+:focus:not(:focus-visible) { outline: none; }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar       { width: 3px; }
@@ -53,7 +83,8 @@ body  {
   width: max-content;
   animation: marquee 30s linear infinite;
 }
-.marquee-track:hover { animation-play-state: paused; }
+.marquee-track:hover,
+.marquee-track:focus-within { animation-play-state: paused; }
 
 /* ── Pulse ── */
 @keyframes pulse-ring {
@@ -99,7 +130,8 @@ body  {
   background: var(--gold);
   transition: width 0.28s ease;
 }
-.u-hover:hover::after { width: 100%; }
+.u-hover:hover::after,
+.u-hover:focus-visible::after { width: 100%; }
 
 /* ── Merch hover ── */
 .merch-wrap { position: relative; overflow: hidden; }
@@ -116,7 +148,8 @@ body  {
   opacity: 0;
   transition: opacity 0.28s ease;
 }
-.merch-card:hover .merch-overlay { opacity: 1; }
+.merch-card:hover .merch-overlay,
+.merch-card:focus-within .merch-overlay { opacity: 1; }
 
 /* ── Bento card hover ── */
 .bento-card {
@@ -124,6 +157,38 @@ body  {
 }
 .bento-card:hover {
   border-color: var(--border-hi) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BRAND MOTIFS — brandbook devices that were previously unused
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Angled isotype photo mask (brandbook: "Angled Isotype Photo Mask").
+   The tilted-A notch, cut into image corners. */
+.isotype-mask {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 34px), calc(100% - 34px) 100%, 0 100%);
+}
+@media (max-width: 640px) {
+  .isotype-mask {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
+  }
+}
+
+/* Diagonal line framing motif (brandbook: "Diagonal Line Framing Motif"). */
+.diag-hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--ochre-border) 0px,
+    var(--ochre-border) 1px,
+    transparent 1px,
+    transparent 9px
+  );
+}
+
+/* Repeating isotype pattern — subtle tiled brand texture. */
+.isotype-tile {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cpath d='M20 8 L56 8 L44 56 L8 56 Z' fill='none' stroke='%23c18500' stroke-opacity='0.08' stroke-width='2'/%3E%3C/svg%3E");
+  background-size: 64px 64px;
 }
 
 /* ── Ghost text ── */
@@ -166,4 +231,29 @@ body  {
   opacity: 0.038;
   animation: grain-shift 6s steps(8) infinite;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   REDUCED MOTION — honour the OS setting. Reveals resolve instantly
+   so no content can be stranded at opacity 0.
+   ══════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .marquee-track { animation: none; }
+  .grain-overlay { animation: none; }
+  .live-dot::before { animation: none; opacity: 0; }
+  .live-dot::after  { animation: none; }
+
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

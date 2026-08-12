@@ -1,26 +1,29 @@
 "use client";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import emailjs from "@emailjs/browser";
 
 const MapEmbed = dynamic(() => import("./MapEmbed"), { ssr: false });
 
 /* ════════════════════════════ TOKENS ════════════════════════════ */
+/* Values mirror BASE_BRANDBOOK.pdf p.5. Keep in sync with :root in globals.css. */
 const C = {
   black:     "#111111",
   blackSoft: "#181818",
   blackCard: "#1f1f1f",
-  blackHi:   "#262626",
-  gold:      "#df9f00",
+  blackHi:   "#282828",              // brandbook charcoal
+  gold:      "#df9f00",              // brandbook amber — CTAs only
   goldHi:    "#f0ad00",
-  brown:     "#231806",
-  cream:     "#f4ecdc",
+  ochre:     "#c18500",              // brandbook ochre — secondary accent
+  brown:     "#443822",              // brandbook dark olive brown
+  cream:     "#f4ecdc",              // brandbook cream
   muted:     "rgba(244,236,220,0.65)",
-  muted2:    "rgba(244,236,220,0.35)",
+  muted2:    "rgba(244,236,220,0.42)",
   border:    "rgba(223,159,0,0.12)",
   borderHi:  "rgba(223,159,0,0.32)",
   goldDim:   "rgba(223,159,0,0.08)",
+  ochreLine: "rgba(193,133,0,0.22)",
 };
 const H = "var(--font-heading),'Barlow Condensed',sans-serif";
 const B = "var(--font-body),'Barlow',system-ui,sans-serif";
@@ -45,6 +48,15 @@ function useReveal(delay = 0) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    /* Never strand content at opacity 0: if the observer is unavailable or the
+       visitor prefers reduced motion, show immediately. */
+    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduced || typeof IntersectionObserver === "undefined") {
+      el.classList.add("visible");
+      return;
+    }
+
     const obs = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) {
@@ -55,27 +67,41 @@ function useReveal(delay = 0) {
       { threshold: 0.06 }
     );
     obs.observe(el);
-    return () => obs.disconnect();
+
+    /* Safety net — reveal regardless after 2.5s so a missed callback can never
+       leave a section permanently invisible. */
+    const failsafe = setTimeout(() => el.classList.add("visible"), 2500);
+    return () => { obs.disconnect(); clearTimeout(failsafe); };
   }, [delay]);
   return ref;
 }
 
-function useCountdown(target: Date) {
-  const calc = () => {
-    const diff = target.getTime() - Date.now();
-    if (diff <= 0) return { d: 0, h: 0, m: 0, s: 0, over: true };
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    return { d, h, m, s, over: false };
+function subscribeToTick(cb: () => void) {
+  const id = setInterval(cb, 1000);
+  return () => clearInterval(id);
+}
+
+/* Seconds remaining, read as a primitive so useSyncExternalStore can compare it
+   cheaply and only re-render once a second. The server snapshot is `null`: the
+   countdown is time-dependent, so SSR renders a stable placeholder and the real
+   digits appear after hydration — previously this hydrated with a different
+   second than the server rendered and threw away the whole subtree. */
+function useCountdown(targetTime: number) {
+  const secondsLeft = useSyncExternalStore(
+    subscribeToTick,
+    () => Math.max(0, Math.floor((targetTime - Date.now()) / 1000)),
+    () => null,
+  );
+
+  if (secondsLeft === null) return null;
+  if (secondsLeft <= 0) return { d: 0, h: 0, m: 0, s: 0, over: true };
+  return {
+    d: Math.floor(secondsLeft / 86400),
+    h: Math.floor((secondsLeft % 86400) / 3600),
+    m: Math.floor((secondsLeft % 3600) / 60),
+    s: secondsLeft % 60,
+    over: false,
   };
-  const [t, setT] = useState(calc);
-  useEffect(() => {
-    const id = setInterval(() => setT(calc()), 1000);
-    return () => clearInterval(id);
-  }, [target.getTime()]);
-  return t;
 }
 
 function useScrolled(px = 40) {
@@ -88,14 +114,20 @@ function useScrolled(px = 40) {
   return on;
 }
 
+/* Viewport width read through useSyncExternalStore: the client gets the real
+   width on its first committed render instead of a 1280 default corrected by a
+   setState-in-effect, which was causing a desktop-layout flash on phones. */
+function subscribeToResize(cb: () => void) {
+  window.addEventListener("resize", cb, { passive: true });
+  return () => window.removeEventListener("resize", cb);
+}
+
 function useBreakpoint() {
-  const [w, setW] = useState(1280);
-  useEffect(() => {
-    setW(window.innerWidth);
-    const fn = () => setW(window.innerWidth);
-    window.addEventListener("resize", fn, { passive: true });
-    return () => window.removeEventListener("resize", fn);
-  }, []);
+  const w = useSyncExternalStore(
+    subscribeToResize,
+    () => window.innerWidth,
+    () => 1280, // server snapshot
+  );
   return {
     isSmallMobile: w < 430,
     isMobile:      w < 640,
@@ -125,14 +157,18 @@ function GoldBtn({
   children: React.ReactNode; outline?: boolean; small?: boolean;
 }) {
   const [hov, setHov] = useState(false);
+  const { isSmallMobile } = useBreakpoint();
   const base: React.CSSProperties = {
     display: "inline-block",
     fontFamily: H, fontWeight: 900,
-    fontSize: small ? 11 : 13,
-    letterSpacing: "0.14em", textTransform: "uppercase",
-    padding: small ? "10px 22px" : "14px 32px",
+    fontSize: small ? 11 : isSmallMobile ? 12 : 13,
+    letterSpacing: isSmallMobile ? "0.1em" : "0.14em",
+    textTransform: "uppercase",
+    padding: small ? "10px 22px" : isSmallMobile ? "13px 20px" : "14px 32px",
     textDecoration: "none", border: "none",
     transition: "all 0.22s ease", cursor: "pointer",
+    /* Que la flecha no salte de línea en pantallas angostas. */
+    whiteSpace: "nowrap",
   };
   const style: React.CSSProperties = outline
     ? { ...base, color: hov ? C.black : C.gold, border: `1.5px solid ${C.gold}`, backgroundColor: hov ? C.gold : "transparent" }
@@ -337,13 +373,40 @@ function Hero() {
       display: "flex", alignItems: "center",
       overflow: "hidden",
     }}>
-      {/* Subtle gold glow — no background image */}
+      {/* Venue photography — the brandbook calls for warm low-light imagery,
+          and the hero was previously flat black. */}
+      <Image
+        src="/fotos_base/DSC06294.JPG"
+        alt=""
+        aria-hidden
+        fill
+        priority
+        sizes="100vw"
+        style={{
+          objectFit: "cover",
+          objectPosition: "68% 78%",
+          filter: "brightness(1.28) saturate(1.08)",
+          zIndex: 0,
+        }}
+      />
+      {/* Legibility scrim — keeps the headline well above 4.5:1 over the photo */}
+      <div aria-hidden style={{
+        position: "absolute", inset: 0, zIndex: 0,
+        background:
+          "linear-gradient(100deg, rgba(17,17,17,0.93) 0%, rgba(17,17,17,0.72) 44%, rgba(17,17,17,0.24) 100%)",
+      }} />
+      {/* Repeating isotype texture (brandbook motif) — kept faint so it reads
+          as texture, not as a wireframe grid over the photo. */}
+      <div className="isotype-tile" aria-hidden style={{
+        position: "absolute", inset: 0, zIndex: 0, opacity: 0.22,
+        pointerEvents: "none",
+      }} />
 
       {/* Gold glow */}
       <div style={{
         position: "absolute", top: -80, left: -60,
         width: 500, height: 500, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(223,159,0,0.06) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(223,159,0,0.10) 0%, transparent 70%)",
         pointerEvents: "none", zIndex: 0,
       }} />
 
@@ -366,11 +429,15 @@ function Hero() {
         {/* Headline */}
         <h1 style={{
           fontFamily: H, fontWeight: 900,
-          fontSize: isSmallMobile ? "clamp(52px,15vw,80px)" : isMobile ? "clamp(64px,16vw,96px)" : isTablet ? "clamp(72px,12vw,120px)" : "clamp(88px,10vw,148px)",
-          lineHeight: 0.86, textTransform: "uppercase",
+          /* Archivo at wdth 122 sets ~35% wider than Barlow Condensed did, so
+             the display scale is tuned down to match. */
+          /* Sized so the longest forced line ("EXPERIENCIAS.") clears the
+             gutters at every breakpoint — it cannot wrap, the lines are <br>. */
+          fontSize: isSmallMobile ? "clamp(26px,8.4vw,34px)" : isMobile ? "clamp(30px,8.5vw,50px)" : isTablet ? "clamp(42px,7.4vw,68px)" : "clamp(56px,6.4vw,96px)",
+          lineHeight: 0.9, textTransform: "uppercase",
           color: C.cream, marginBottom: 36,
-          letterSpacing: "-0.01em",
-          maxWidth: 820,
+          letterSpacing: "0.005em",
+          maxWidth: 920,
         }}>
           UN ESPACIO.<br />
           <span style={{ color: C.gold }}>TODAS</span> LAS<br />
@@ -396,18 +463,25 @@ function Hero() {
         <div style={{
           marginTop: isMobile ? 52 : 72,
           display: "grid",
-          gridTemplateColumns: isSmallMobile ? "1fr 1fr" : isMobile ? "repeat(3, 1fr)" : "repeat(3, 1fr)",
+          /* Tres columnas no caben en ningún teléfono (a 430px "LA MARISCAL"
+             partía en dos líneas): dos columnas hasta 640px. */
+          gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)",
           gap: 2,
         }}>
           {[
-            { val: "+300",         lbl: "Personas",        sub: "Paradas" },
-            { val: "Conciertos",  lbl: "Fiestas",          sub: "Corporativos" },
-            { val: "QUITO",       lbl: "Ecuador",            sub: "Francisco Salazar y José Tamayo" },
-          ].map((s) => (
+            { val: "+300", lbl: "Capacidad", sub: "Personas de pie" },
+            { val: "03",   lbl: "Formatos",  sub: "Conciertos · Fiestas · Corporativos" },
+            { val: "QUITO",lbl: "La Mariscal", sub: "Francisco Salazar y José Tamayo" },
+          ].map((s, i) => (
             <div key={s.lbl} style={{
-              backgroundColor: C.blackCard,
+              backgroundColor: "rgba(31,31,31,0.72)",
+              backdropFilter: "blur(8px)",
               border: `1px solid ${C.border}`,
               padding: isMobile ? "20px 18px" : "24px 28px",
+              minWidth: 0,
+              /* A dos columnas el tercer tile quedaba solo a media fila;
+                 que ocupe el ancho completo se lee como intencional. */
+              gridColumn: isMobile && i === 2 ? "1 / -1" : "auto",
             }}>
               <div style={{
                 fontFamily: H, fontWeight: 900,
@@ -454,32 +528,38 @@ function Marquee() {
 }
 
 /* ════════════════════════════ EVENTS ════════════════════════════ */
+const CLASICOS_START = new Date("2026-08-29T20:00:00-05:00").getTime();
+
 function ClasicosCountdown() {
-  const { d, h, m, s, over } = useCountdown(new Date("2026-08-29T20:00:00-05:00"));
-  if (over) return null;
-  const units = [["días", d], ["hrs", h], ["min", m], ["seg", s]] as const;
+  const t = useCountdown(CLASICOS_START);
+  if (t?.over) return null;
+  // `null` on the server / first paint — same markup, placeholder digits.
+  const units = [
+    ["días", t?.d], ["hrs", t?.h], ["min", t?.m], ["seg", t?.s],
+  ] as const;
   return (
     <div style={{ marginBottom: 24 }}>
       <p style={{
-        fontFamily: "var(--font-h)", fontWeight: 700, fontSize: 9,
+        fontFamily: H, fontWeight: 700, fontSize: 9,
         letterSpacing: "0.28em", textTransform: "uppercase",
-        color: "var(--gold)", marginBottom: 10,
+        color: C.gold, marginBottom: 10,
       }}>Faltan</p>
       <div style={{ display: "flex", gap: 8 }}>
         {units.map(([lbl, val]) => (
           <div key={lbl} style={{
-            flex: 1, backgroundColor: "rgba(223,159,0,0.08)",
-            border: "1px solid rgba(223,159,0,0.25)",
+            flex: 1, backgroundColor: "rgba(193,133,0,0.10)",
+            border: `1px solid ${C.ochreLine}`,
             padding: "10px 6px", textAlign: "center",
           }}>
             <div style={{
-              fontFamily: "var(--font-h)", fontWeight: 900, fontSize: 28,
-              color: "var(--gold)", lineHeight: 1,
-            }}>{String(val).padStart(2, "0")}</div>
+              fontFamily: H, fontWeight: 900, fontSize: 28,
+              color: C.gold, lineHeight: 1,
+              fontVariantNumeric: "tabular-nums",
+            }}>{val === undefined ? "––" : String(val).padStart(2, "0")}</div>
             <div style={{
-              fontFamily: "var(--font-h)", fontWeight: 700, fontSize: 9,
+              fontFamily: H, fontWeight: 700, fontSize: 9,
               letterSpacing: "0.18em", textTransform: "uppercase",
-              color: "rgba(244,236,220,0.5)", marginTop: 4,
+              color: C.muted2, marginTop: 4,
             }}>{lbl}</div>
           </div>
         ))}
@@ -488,11 +568,18 @@ function ClasicosCountdown() {
   );
 }
 
+const EVENTOS_PASADOS: [string, string][] = [
+  ["Jony Beltrán & Serko Fu",              "6 Ago 2026"],
+  ["Cumbia Sin Fronteras · La Bochinchera", "1 Ago 2026"],
+  ["GIANNY EN VIVO · Promotor Mad Max",     "31 Jul 2026"],
+  ["La Velada del Año VI · Night Party",    "25 Jul 2026"],
+];
+
 function Events() {
   const refH = useReveal(0);
   const refC = useReveal(120);
   const refB = useReveal(80);
-  const refD = useReveal(80);
+  const [showPast, setShowPast] = useState(false);
   const { isMobile, isTablet } = useBreakpoint();
   return (
     <section id="eventos" style={{ backgroundColor: C.black, padding: isMobile ? "64px 0" : isTablet ? "80px 0" : "100px 0" }}>
@@ -506,8 +593,8 @@ function Events() {
             <Label>Agenda</Label>
             <h2 style={{
               fontFamily: H, fontWeight: 900,
-              fontSize: "clamp(52px,7vw,88px)",
-              lineHeight: 0.88, textTransform: "uppercase", color: C.cream,
+              fontSize: "clamp(34px,4.8vw,60px)",
+              lineHeight: 0.95, textTransform: "uppercase", color: C.cream,
             }}>
               PRÓXIMOS<br /><span style={{ color: C.gold }}>EVENTOS</span>
             </h2>
@@ -539,7 +626,7 @@ function Events() {
           }}>
             <div>
               <span style={{ display: "inline-block", backgroundColor: C.gold, color: C.black, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
-              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(38px,4vw,60px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>DJ 1SAK</h3>
+              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(28px,2.9vw,42px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>DJ 1SAK</h3>
               <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Desde México · LNG/SHT · Galaxia Cero</p>
               <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
               <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Entrada gratuita · Venta de merch oficial LNG/SHT</p>
@@ -553,9 +640,10 @@ function Events() {
                   </div>
                 ))}
               </div>
-              <a href={WA_URL} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: H, fontWeight: 900, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase", color: C.black, backgroundColor: C.gold, padding: "14px 32px", textDecoration: "none" }}>
-                Más info →
-              </a>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <GoldBtn onClick={() => openReservas("dj1sak")}>Reservar mi lugar →</GoldBtn>
+                <GoldBtn href={WA_URL} target="_blank" outline>Más info</GoldBtn>
+              </div>
             </div>
           </div>
         </div>
@@ -571,14 +659,14 @@ function Events() {
             <Image
               src="/events/ClasicosVSCumbia/flyer-short.png"
               alt="Clásicos VS Cumbia · 29 de Agosto"
-              fill style={{ objectFit: "cover", objectPosition: "top" }}
+              fill style={{ objectFit: "contain" }}
               sizes="(max-width:900px) 100vw, 60vw"
             />
           </div>
           <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <div>
               <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
-              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(34px,4vw,56px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>CLÁSICOS VS CUMBIA<br /><span style={{ fontSize: "0.5em", color: C.gold, fontWeight: 700, letterSpacing: "0.06em" }}>· Promotor Cumbia Capital</span></h3>
+              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(26px,2.7vw,38px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>CLÁSICOS VS CUMBIA<br /><span style={{ fontSize: "0.5em", color: C.gold, fontWeight: 700, letterSpacing: "0.06em" }}>· Promotor Cumbia Capital</span></h3>
               <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
               <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Dos estilos, una sola fiesta. Bebidas y picaditas.<br />Preventa $7 · En puerta $10</p>
             </div>
@@ -593,33 +681,70 @@ function Events() {
                   </div>
                 ))}
               </div>
-              <a href={`https://wa.me/593996242174?text=${encodeURIComponent("Hola! Me interesa el evento Clásicos VS Cumbia del 29 de Agosto en BASE. ¿Pueden darme más información sobre preventa y reservas?")}`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: H, fontWeight: 900, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase", color: C.black, backgroundColor: C.gold, padding: "14px 32px", textDecoration: "none" }}>
-                Más info →
-              </a>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <GoldBtn onClick={() => openReservas("clasicos")}>Reservar mi lugar →</GoldBtn>
+                <GoldBtn
+                  href={`https://wa.me/593996242174?text=${encodeURIComponent("Hola! Me interesa el evento Clásicos VS Cumbia del 29 de Agosto en BASE. ¿Pueden darme más información sobre preventa y reservas?")}`}
+                  target="_blank" outline
+                >Más info</GoldBtn>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Eventos pasados */}
-        {[
-          ["Jony Beltrán & Serko Fu",               "6 Ago 2026"],
-          ["Cumbia Sin Fronteras · La Bochinchera",  "1 Ago 2026"],
-          ["GIANNY EN VIVO · Promotor Mad Max",      "31 Jul 2026"],
-          ["La Velada del Año VI · Night Party",     "25 Jul 2026"],
-        ].map(([name, date]) => (
-          <div key={name} style={{
-            backgroundColor: C.blackCard, border: `1px solid ${C.border}`,
-            padding: isMobile ? "20px 20px" : "20px 36px",
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "auto 1fr auto",
-            alignItems: "center", gap: isMobile ? 12 : 24, marginBottom: 3,
-            opacity: 0.5,
+        {/* Eventos pasados — colapsados por defecto para no competir con la agenda */}
+        <button
+          type="button"
+          onClick={() => setShowPast((v) => !v)}
+          aria-expanded={showPast}
+          aria-controls="eventos-pasados"
+          style={{
+            all: "unset", cursor: "pointer", width: "100%", boxSizing: "border-box",
+            marginTop: 3, marginBottom: 3,
+            padding: isMobile ? "16px 20px" : "18px 36px",
+            backgroundColor: C.blackSoft,
+            border: `1px solid ${C.ochreLine}`,
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            gap: 16, flexWrap: "wrap",
+          }}
+        >
+          <span style={{
+            fontFamily: H, fontWeight: 700, fontSize: 12,
+            letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted,
           }}>
-            <span style={{ fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, backgroundColor: "rgba(244,236,220,0.06)", border: `1px solid rgba(244,236,220,0.1)`, padding: "4px 10px", whiteSpace: "nowrap" }}>Evento pasado</span>
-            <span style={{ fontFamily: H, fontWeight: 900, fontSize: isMobile ? 18 : 24, textTransform: "uppercase", color: C.cream }}>{name}</span>
-            <span style={{ fontFamily: H, fontWeight: 700, fontSize: 13, color: C.muted, whiteSpace: "nowrap" }}>{date}</span>
+            Eventos pasados ({EVENTOS_PASADOS.length})
+          </span>
+          <span style={{
+            fontFamily: H, fontWeight: 800, fontSize: 13,
+            letterSpacing: "0.1em", textTransform: "uppercase", color: C.ochre,
+            display: "inline-flex", alignItems: "center", gap: 8,
+          }}>
+            {showPast ? "Ocultar" : "Ver historial"}
+            <span aria-hidden style={{
+              display: "inline-block",
+              transform: showPast ? "rotate(180deg)" : "none",
+              transition: "transform 0.22s ease",
+            }}>▾</span>
+          </span>
+        </button>
+
+        {showPast && (
+          <div id="eventos-pasados">
+            {EVENTOS_PASADOS.map(([name, date]) => (
+              <div key={name} style={{
+                backgroundColor: C.blackCard, border: `1px solid ${C.border}`,
+                padding: isMobile ? "20px 20px" : "20px 36px",
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "auto 1fr auto",
+                alignItems: "center", gap: isMobile ? 12 : 24, marginBottom: 3,
+              }}>
+                <span style={{ fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.ochre, backgroundColor: "rgba(193,133,0,0.10)", border: `1px solid ${C.ochreLine}`, padding: "4px 10px", whiteSpace: "nowrap" }}>Evento pasado</span>
+                <span style={{ fontFamily: H, fontWeight: 900, fontSize: isMobile ? 18 : 24, textTransform: "uppercase", color: C.muted }}>{name}</span>
+                <span style={{ fontFamily: H, fontWeight: 700, fontSize: 13, color: C.muted2, whiteSpace: "nowrap" }}>{date}</span>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
 
         {/* Más eventos strip */}
         <div style={{
@@ -648,21 +773,35 @@ function Events() {
 }
 
 /* ════════════════════════════ MODAL TRIGGER ════════════════════════════ */
-function openReservas() {
+/* Opens <ReservasModal />. Optionally preselects an event by id. */
+function openReservas(eventoId?: string) {
   if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event("base:openReservas"));
+    window.dispatchEvent(
+      new CustomEvent("base:openReservas", { detail: { evento: eventoId } })
+    );
   }
 }
 
 /* ════════════════════════════ RESERVAS MODAL ════════════════════════════ */
-const EVENTOS_25 = [
+/* Upcoming events only — keep in sync with the cards in <Events />. */
+const EVENTOS_PROXIMOS = [
   {
-    id:    "cumbia",
-    hora:  "8:00 pm",
-    name:  "Cumbia Sin Fronteras",
-    desc:  "Show en vivo · La Bochinchera",
-    badge: "Todo público",
+    id:    "dj1sak",
+    fecha: "Sáb 15 de Agosto",
+    hora:  "Puertas 8:00 pm",
+    name:  "DJ 1SAK",
+    desc:  "Desde México · LNG/SHT · Galaxia Cero",
+    badge: "Entrada gratuita",
     badgeColor: C.gold,
+  },
+  {
+    id:    "clasicos",
+    fecha: "Sáb 29 de Agosto",
+    hora:  "8:00 pm",
+    name:  "Clásicos VS Cumbia",
+    desc:  "Back in Time vs Cumbia Capital",
+    badge: "Preventa $7",
+    badgeColor: C.ochre,
   },
 ];
 
@@ -689,7 +828,11 @@ function ReservasModal() {
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
 
   useEffect(() => {
-    const fn = () => setOpen(true);
+    const fn = (e: Event) => {
+      const id = (e as CustomEvent<{ evento?: string }>).detail?.evento;
+      if (id) setForm((p) => ({ ...p, evento: id }));
+      setOpen(true);
+    };
     window.addEventListener("base:openReservas", fn);
     return () => window.removeEventListener("base:openReservas", fn);
   }, []);
@@ -726,9 +869,8 @@ function ReservasModal() {
     if (!validate()) return;
     setLoading(true);
 
-    const eventoLabel = form.evento === "cumbia"
-      ? "Cumbia Sin Fronteras (Sáb 1 Ago, 8:00 pm)"
-      : form.evento;
+    const ev = EVENTOS_PROXIMOS.find((x) => x.id === form.evento);
+    const eventoLabel = ev ? `${ev.name} (${ev.fecha}, ${ev.hora})` : form.evento;
 
     const enteradoLabel: Record<string, string> = {
       ig: "Instagram", tk: "TikTok", ref: "Recomendación de un amigo", otro: "Otro",
@@ -807,7 +949,7 @@ function ReservasModal() {
               fontFamily: H, fontWeight: 700, fontSize: 10,
               letterSpacing: "0.26em", textTransform: "uppercase",
               color: C.gold, marginBottom: 2,
-            }}>Sáb 1 de Agosto 2026 · 8:00 pm</p>
+            }}>Cupo limitado · Reserva gratuita</p>
             <p style={{
               fontFamily: H, fontWeight: 900, fontSize: 22,
               textTransform: "uppercase", color: C.cream,
@@ -865,8 +1007,9 @@ function ReservasModal() {
             }}>
               <p style={{ ...lbl, marginBottom: 14 }}>Selecciona tu evento</p>
 
-              {EVENTOS_25.map((ev) => (
+              {EVENTOS_PROXIMOS.map((ev) => (
                 <button key={ev.id} type="button" onClick={() => set("evento", ev.id)}
+                  aria-pressed={form.evento === ev.id}
                   style={{
                     all: "unset", cursor: "pointer", textAlign: "left",
                     display: "flex", flexDirection: "column", gap: 6,
@@ -878,7 +1021,7 @@ function ReservasModal() {
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
                     <span style={{ fontFamily: H, fontWeight: 700, fontSize: 12, color: C.gold, letterSpacing: "0.08em" }}>
-                      {ev.hora}
+                      {ev.fecha} · {ev.hora}
                     </span>
                     <span style={{
                       fontFamily: H, fontWeight: 800, fontSize: 9,
@@ -963,7 +1106,8 @@ function ReservasModal() {
 
               <div>
                 <label style={lbl}>¿Cómo te enteraste? <span style={{ color: C.gold }}>*</span></label>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <div role="radiogroup" aria-label="¿Cómo te enteraste?"
+                  style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   {[
                     { id: "ig",   label: "Instagram" },
                     { id: "tk",   label: "TikTok" },
@@ -1028,7 +1172,9 @@ function RadioRow({
   id, label, checked, onChange,
 }: { id: string; label: string; checked: boolean; onChange: () => void }) {
   return (
-    <button type="button" onClick={onChange} style={{
+    <button type="button" onClick={onChange}
+      id={`enterado-${id}`} role="radio" aria-checked={checked}
+      style={{
       all: "unset", cursor: "pointer",
       display: "flex", alignItems: "center", gap: 12,
       padding: "11px 16px",
@@ -1066,18 +1212,32 @@ function GalleryCard({
 }) {
   const [hov, setHov] = useState(false);
   return (
-    <div
+    <button
+      type="button"
       onClick={() => onOpen(idx)}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
+      aria-label={`Ampliar foto: ${img.alt}`}
+      className="isotype-mask"
+      /* Explicit resets rather than `all: unset` — the shorthand also clears
+         clip-path, and inline styles beat the .isotype-mask class rule. */
       style={{
+        appearance: "none",
+        background: "none",
+        padding: 0,
+        margin: 0,
+        font: "inherit",
+        color: "inherit",
+        textAlign: "inherit",
+        boxSizing: "border-box",
+        display: "block", width: "100%",
         position: "relative",
         gridRow: tall ? "1 / 3" : "auto",
         minHeight: tall ? 480 : 200,
         cursor: "pointer", overflow: "hidden",
         border: `1px solid ${hov ? C.borderHi : C.border}`,
         transition: "border-color 0.25s",
-        backgroundColor: contained ? "#f0a800" : C.blackCard,
+        backgroundColor: contained ? C.ochre : C.blackCard,
       }}
     >
       <Image
@@ -1116,25 +1276,25 @@ function GalleryCard({
         fontFamily: H, fontWeight: 700,
         opacity: hov ? 1 : 0, transition: "opacity 0.2s",
       }}>⊕</div>
-    </div>
+    </button>
   );
 }
 
 /* ════════════════════════════ GALLERY ════════════════════════════ */
+const IMGS = [
+  { src: "/fotos_base/DSC06294.JPG",  alt: "Salón principal de BASE",        label: "El venue"   },
+  { src: "/fotos_base/DSC06265.JPG",  alt: "Pasillo de arcos iluminados",    label: "Ambiente"   },
+  { src: "/fotos_base/DSC06275.jpeg", alt: "Escenario e iluminación",        label: "Escenario"  },
+  { src: "/fotos_base/DSC06291.JPG",  alt: "Mural y mesas del salón",        label: "El espacio" },
+  { src: "/fotos_base/DSC06314.JPG",  alt: "Salón de doble altura",          label: "Noche"      },
+  { src: "/fotos_base/DSC06315.JPG",  alt: "Mural de caligrafía en detalle", label: "Detalles"   },
+  { src: "/fotos_base/base_004.jpeg", alt: "Fachada exterior de BASE",       label: "El venue"   },
+];
+
 function Gallery() {
   const [lbIndex, setLbIndex] = useState<number | null>(null);
   const { isMobile, isTablet } = useBreakpoint();
   const ref = useReveal(0);
-
-  const IMGS = [
-    { src: "/fotos_base/DSC06294.JPG",  alt: "Interior de BASE",              label: "El venue"    },
-    { src: "/fotos_base/DSC06265.JPG",  alt: "BASE en acción",                label: "Ambiente"    },
-    { src: "/fotos_base/DSC06275.jpeg", alt: "Escenario de BASE",             label: "Escenario"   },
-    { src: "/fotos_base/DSC06291.JPG",  alt: "Espacio de BASE",               label: "El espacio"  },
-    { src: "/fotos_base/DSC06314.JPG",  alt: "BASE de noche",                 label: "Noche"       },
-    { src: "/fotos_base/DSC06315.JPG",  alt: "Detalles de BASE",              label: "Detalles"    },
-    { src: "/fotos_base/base_004.jpeg",  alt: "Fachada de BASE",               label: "El venue"    },
-  ];
 
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
@@ -1154,7 +1314,7 @@ function Gallery() {
           <Label>Galería</Label>
           <h2 style={{
             fontFamily: H, fontWeight: 900,
-            fontSize: "clamp(52px,7vw,88px)", lineHeight: 0.88,
+            fontSize: "clamp(34px,4.8vw,60px)", lineHeight: 0.95,
             textTransform: "uppercase", color: C.cream,
           }}>
             EL ESPACIO<br /><span style={{ color: C.gold }}>EN ACCIÓN</span>
@@ -1313,7 +1473,7 @@ function Espacio() {
             <Label>El Espacio</Label>
             <h2 style={{
               fontFamily: H, fontWeight: 900,
-              fontSize: "clamp(52px,7vw,88px)", lineHeight: 0.88,
+              fontSize: "clamp(34px,4.8vw,60px)", lineHeight: 0.95,
               textTransform: "uppercase", color: C.cream,
             }}>
               UN VENUE.<br /><span style={{ color: C.gold }}>TRES MODOS.</span>
@@ -1328,46 +1488,14 @@ function Espacio() {
 
         <div style={{
           display: "grid",
-          gridTemplateColumns: isMobile || isTablet ? "1fr" : "repeat(3,1fr)",
+          /* En tablet caben dos por fila; apilarlas las tres desperdiciaba
+             el ancho de 640–1023px. */
+          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2,1fr)" : "repeat(3,1fr)",
           gap: 3,
         }}>
-          {TIPOS.map((t, i) => {
-            const ref = useReveal(i * 80);
-            return (
-              <div key={t.n} ref={ref} className="reveal" style={{
-                backgroundColor: C.blackCard,
-                border: `1px solid ${C.border}`,
-                padding: "36px 32px 40px",
-                display: "flex", flexDirection: "column", gap: 0,
-                transition: "border-color 0.25s",
-              }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = C.borderHi}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = C.border}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
-                  <span style={{
-                    fontFamily: H, fontWeight: 900, fontSize: 13,
-                    color: C.gold, opacity: 0.45, letterSpacing: "0.1em",
-                  }}>{t.n}</span>
-                  <span style={{
-                    fontFamily: H, fontWeight: 700, fontSize: 9,
-                    letterSpacing: "0.2em", textTransform: "uppercase",
-                    color: C.black, backgroundColor: C.gold,
-                    padding: "4px 10px",
-                  }}>{t.tag}</span>
-                </div>
-                <h3 style={{
-                  fontFamily: H, fontWeight: 900, fontSize: 32,
-                  textTransform: "uppercase", color: C.cream,
-                  lineHeight: 0.92, marginBottom: 16,
-                }}>{t.title}</h3>
-                <div style={{ width: 32, height: 2, backgroundColor: C.gold, marginBottom: 20 }} />
-                <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>
-                  {t.desc}
-                </p>
-              </div>
-            );
-          })}
+          {TIPOS.map((t, i) => (
+            <TipoCard key={t.n} t={t} i={i} />
+          ))}
         </div>
 
         {/* Datos del venue */}
@@ -1381,11 +1509,14 @@ function Espacio() {
           gap: isMobile || isTablet ? 16 : 0,
         }}>
           {[
-            "+300 paradas", "Sonido", "Barra", "Quito",
+            { val: "+300",   lbl: "Personas de pie" },
+            { val: "Pro",    lbl: "Sonido e iluminación" },
+            { val: "Barra",  lbl: "Completa · bajo pedido" },
+            { val: "Quito",  lbl: "La Mariscal" },
           ].map((d, i) => (
-            <div key={d} style={{
-              display: "flex", flexDirection: "column", gap: 4,
-              borderLeft: (!isMobile && !isTablet && i > 0) ? `1px solid ${C.border}` : "none",
+            <div key={d.lbl} style={{
+              display: "flex", flexDirection: "column", gap: 6,
+              borderLeft: (!isMobile && !isTablet && i > 0) ? `1px solid ${C.ochreLine}` : "none",
               paddingLeft: (!isMobile && !isTablet && i > 0) ? 40 : 0,
             }}>
               <span style={{
@@ -1393,12 +1524,64 @@ function Espacio() {
                 fontSize: isSmallMobile ? 22 : isMobile ? 26 : isTablet ? 30 : 36,
                 color: C.gold, lineHeight: 1,
                 textTransform: "uppercase",
-              }}>{d}</span>
+              }}>{d.val}</span>
+              <span style={{
+                fontFamily: H, fontWeight: 700, fontSize: 11,
+                letterSpacing: "0.18em", textTransform: "uppercase",
+                color: C.muted,
+              }}>{d.lbl}</span>
             </div>
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+/* Own component so useReveal is not called inside a .map() (Rules of Hooks). */
+function TipoCard({
+  t, i,
+}: { t: { n: string; title: string; desc: string; tag: string }; i: number }) {
+  const ref = useReveal(i * 80);
+  const { isMobile, isTablet } = useBreakpoint();
+  return (
+    <div ref={ref} className="reveal bento-card" style={{
+      backgroundColor: C.blackCard,
+      border: `1px solid ${C.border}`,
+      padding: isMobile ? "28px 22px 32px" : "36px 32px 40px",
+      display: "flex", flexDirection: "column", gap: 0,
+      /* Sin minWidth:0 el ítem de grid no baja de su min-content y desborda
+         la sección en pantallas angostas y a 1024px. */
+      minWidth: 0,
+      /* En tablet la rejilla es de 2: la tercera ocupa la fila entera en vez
+         de quedar suelta a media fila. */
+      gridColumn: isTablet && i === 2 ? "1 / -1" : "auto",
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
+        <span style={{
+          fontFamily: H, fontWeight: 900, fontSize: 13,
+          color: C.ochre, letterSpacing: "0.1em",
+        }}>{t.n}</span>
+        <span style={{
+          fontFamily: H, fontWeight: 700, fontSize: 9,
+          letterSpacing: "0.2em", textTransform: "uppercase",
+          color: C.cream, border: `1px solid ${C.ochreLine}`,
+          backgroundColor: "rgba(193,133,0,0.10)",
+          padding: "4px 10px",
+        }}>{t.tag}</span>
+      </div>
+      {/* Escalado para que la palabra más larga ("CELEBRACIONES") quepa tanto
+          a 360px como en la columna de 3 a 1024px. */}
+      <h3 style={{
+        fontFamily: H, fontWeight: 900, fontSize: "clamp(20px,2.4vw,30px)",
+        textTransform: "uppercase", color: C.cream,
+        lineHeight: 1.02, marginBottom: 16,
+      }}>{t.title}</h3>
+      <div style={{ width: 32, height: 2, backgroundColor: C.gold, marginBottom: 20 }} />
+      <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>
+        {t.desc}
+      </p>
+    </div>
   );
 }
 
@@ -1445,7 +1628,7 @@ function Booking() {
             <Label>Reservas</Label>
             <h2 style={{
               fontFamily: H, fontWeight: 900,
-              fontSize: "clamp(52px,7vw,92px)", lineHeight: 0.88,
+              fontSize: "clamp(34px,4.8vw,62px)", lineHeight: 0.95,
               textTransform: "uppercase", color: C.cream, marginBottom: 28,
             }}>
               RESERVA<br /><span style={{ color: C.gold }}>EL ESPACIO</span>
@@ -1569,10 +1752,61 @@ function Booking() {
 
 /* ════════════════════════════ MERCH ════════════════════════════ */
 const MERCH = [
-  { id: 1, name: "Camiseta", desc: "100% algodón", price: "$0", avail: false },
-  { id: 2, name: "Gorra",    desc: "Snapback",      price: "$0", avail: false },
-  { id: 3, name: "Tote Bag", desc: "Lona",          price: "$0", avail: false },
+  { id: 1, name: "Camiseta", desc: "100% algodón", price: "", avail: false },
+  { id: 2, name: "Gorra",    desc: "Snapback",      price: "", avail: false },
+  { id: 3, name: "Tote Bag", desc: "Lona",          price: "", avail: false },
 ];
+
+/* Own component so useReveal is not called inside a .map() (Rules of Hooks). */
+function MerchCard({ item, i }: { item: (typeof MERCH)[number]; i: number }) {
+  const mRef = useReveal(i * 80);
+  return (
+    <div className="merch-card reveal" ref={mRef}
+      style={{ backgroundColor: C.blackCard, display: "flex", flexDirection: "column" }}>
+      <div className="merch-wrap isotype-mask" style={{ aspectRatio: "1/1", backgroundColor: "#181818" }}>
+        <div className="merch-placeholder" style={{
+          width: "100%", height: "100%",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <Wordmark dim />
+        </div>
+        <div className="merch-overlay">
+          <a href="#contacto" onClick={scrollTo("contacto")} style={{
+            fontFamily: H, fontWeight: 900, fontSize: 12,
+            letterSpacing: "0.14em", textTransform: "uppercase",
+            color: C.black, backgroundColor: C.gold,
+            padding: "12px 26px", textDecoration: "none",
+          }}>
+            {item.avail ? "Pedir ahora" : "Avísame"}
+          </a>
+        </div>
+      </div>
+
+      <div style={{ padding: "22px 24px 28px", display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
+        <h3 style={{
+          fontFamily: H, fontWeight: 900, fontSize: 21,
+          textTransform: "uppercase", color: C.cream,
+        }}>
+          {item.name}
+        </h3>
+        <p style={{ fontFamily: B, fontSize: 13, color: C.muted, marginBottom: 12 }}>{item.desc}</p>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto" }}>
+          {item.avail && item.price ? (
+            <span style={{ fontFamily: H, fontWeight: 900, fontSize: 22, color: C.gold }}>
+              {item.price}
+            </span>
+          ) : (
+            <span style={{
+              fontFamily: H, fontWeight: 700, fontSize: 10,
+              letterSpacing: "0.18em", textTransform: "uppercase",
+              color: C.ochre,
+            }}>Próximamente</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function Merch() {
   const ref = useReveal(0);
@@ -1596,7 +1830,7 @@ function Merch() {
             </div>
             <h2 style={{
               fontFamily: H, fontWeight: 900,
-              fontSize: "clamp(52px,7vw,88px)", lineHeight: 0.88,
+              fontSize: "clamp(34px,4.8vw,60px)", lineHeight: 0.95,
               textTransform: "uppercase", color: C.cream,
             }}>
               MERCH <span style={{ color: C.gold }}>BASE</span>
@@ -1607,55 +1841,16 @@ function Merch() {
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "repeat(3,1fr)", gap: 3 }}>
-          {MERCH.map((item, i) => {
-            const mRef = useReveal(i * 80);
-            return (
-              <div key={item.id} className="merch-card reveal" ref={mRef}
-                style={{ backgroundColor: C.blackCard, display: "flex", flexDirection: "column" }}>
-                <div className="merch-wrap" style={{ aspectRatio: "1/1", backgroundColor: "#181818" }}>
-                  <div className="merch-placeholder" style={{
-                    width: "100%", height: "100%",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}>
-                    <Wordmark dim />
-                  </div>
-                  <div className="merch-overlay">
-                    <a href="#contacto" onClick={scrollTo("contacto")} style={{
-                      fontFamily: H, fontWeight: 900, fontSize: 12,
-                      letterSpacing: "0.14em", textTransform: "uppercase",
-                      color: C.black, backgroundColor: C.gold,
-                      padding: "12px 26px", textDecoration: "none",
-                    }}>
-                      {item.avail ? "Pedir ahora" : "Pronto"}
-                    </a>
-                  </div>
-                </div>
-
-                <div style={{ padding: "22px 24px 28px", display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
-                  <h3 style={{
-                    fontFamily: H, fontWeight: 900, fontSize: 21,
-                    textTransform: "uppercase", color: C.cream,
-                  }}>
-                    {item.name}
-                  </h3>
-                  <p style={{ fontFamily: B, fontSize: 13, color: C.muted, marginBottom: 12 }}>{item.desc}</p>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto" }}>
-                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 22, color: C.gold }}>
-                      {item.price}
-                    </span>
-                    {!item.avail && (
-                      <span style={{
-                        fontFamily: H, fontWeight: 700, fontSize: 10,
-                        letterSpacing: "0.18em", textTransform: "uppercase",
-                        color: C.muted, opacity: 0.45,
-                      }}>Pronto</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        {/* auto-fit: 2 columnas a 640px, 3 desde ~768px — evita que la tercera
+            pieza quede huérfana en tablet. */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit,minmax(220px,1fr))",
+          gap: 3,
+        }}>
+          {MERCH.map((item, i) => (
+            <MerchCard key={item.id} item={item} i={i} />
+          ))}
         </div>
       </div>
     </section>
@@ -1703,7 +1898,7 @@ function Location() {
           <Label>Ubicación</Label>
           <h2 style={{
             fontFamily: H, fontWeight: 900,
-            fontSize: "clamp(44px,6vw,80px)", lineHeight: 0.9,
+            fontSize: "clamp(30px,3.6vw,52px)", lineHeight: 0.9,
             textTransform: "uppercase", color: C.cream, marginBottom: 28,
           }}>
             CÓMO<br /><span style={{ color: C.gold }}>LLEGAR</span>
@@ -1812,7 +2007,7 @@ function Contact() {
             <Label>Contacto</Label>
             <h2 style={{
               fontFamily: H, fontWeight: 900,
-              fontSize: "clamp(52px,7vw,96px)", lineHeight: 0.88,
+              fontSize: "clamp(34px,4.8vw,64px)", lineHeight: 0.95,
               textTransform: "uppercase", color: C.cream, marginBottom: 24,
             }}>
               HÁBLANOS
@@ -1831,6 +2026,9 @@ function Contact() {
                 <div key={lbl} style={{
                   display: "flex", alignItems: "center",
                   justifyContent: "space-between",
+                  /* Envuelve en pantallas angostas: la fila etiqueta + correo
+                     no cabía a 360px y recortaba la sección. */
+                  flexWrap: "wrap", gap: "4px 16px",
                   padding: "18px 0", borderBottom: `1px solid ${C.border}`,
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -1841,8 +2039,10 @@ function Contact() {
                     }}>{lbl}</span>
                   </div>
                   <a href={href} target="_blank" rel="noopener noreferrer" className="u-hover" style={{
-                    fontFamily: H, fontWeight: 800, fontSize: 17,
+                    fontFamily: H, fontWeight: 800,
+                    fontSize: isMobile ? 15 : 17,
                     color: C.gold, textDecoration: "none",
+                    overflowWrap: "anywhere",
                   }}>{val}</a>
                 </div>
               ))}
@@ -1958,8 +2158,8 @@ function Footer() {
         }}>
 
           {/* Brand */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <Wordmark />
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "flex-start" }}>
+            <Wordmark height={52} />
             <p style={{ fontFamily: B, fontSize: 15, lineHeight: 1.75, color: C.muted, maxWidth: 300 }}>
               Venue para conciertos, fiestas y eventos en Quito, Ecuador.
             </p>
@@ -2105,7 +2305,7 @@ function IconWhatsApp({ size = 20, color = "currentColor" }: { size?: number; co
 }
 
 /* ════════════════════════════ WORDMARK ════════════════════════════ */
-function Wordmark({ dim }: { dim?: boolean }) {
+function Wordmark({ dim, height = 36 }: { dim?: boolean; height?: number }) {
   if (dim) {
     return (
       <div style={{
@@ -2118,12 +2318,20 @@ function Wordmark({ dim }: { dim?: boolean }) {
     );
   }
   return (
+    /* Intrinsic size declared truthfully (the asset is 1920x1080) and scaled by
+       height alone — the previous 108x36 pair mis-stated the ratio. */
     <Image
       src="/1.png"
       alt="BASE"
-      height={36}
-      width={108}
-      style={{ display: "block", objectFit: "contain" }}
+      width={1920}
+      height={1080}
+      priority
+      style={{
+        display: "block", height, width: "auto",
+        /* Sin esto, un contenedor flex en columna (el footer) lo estira a lo
+           ancho y deforma el logo. */
+        alignSelf: "flex-start", maxWidth: "100%", objectFit: "contain",
+      }}
     />
   );
 }
@@ -2139,9 +2347,12 @@ export default function Page() {
       <main>
         <Hero />
         <Marquee />
-        <Events />
-        <Gallery />
+        {/* Order matches the navbar: El Espacio → Galería → Eventos → Reservas
+            → Ubicación → Contacto. Previously Eventos came first, so visitors
+            hit flyers before learning what BASE is. */}
         <Espacio />
+        <Gallery />
+        <Events />
         <Booking />
         <Merch />
         <Location />

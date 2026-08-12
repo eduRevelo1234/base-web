@@ -72,7 +72,6 @@ export default function MapEmbed() {
         mapRef.current = null;
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
