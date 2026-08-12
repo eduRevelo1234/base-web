@@ -581,6 +581,7 @@ function Events() {
   const refC = useReveal(120);
   const refB = useReveal(80);
   const refA = useReveal(80);
+  const refM = useReveal(100);
   const [showPast, setShowPast] = useState(false);
   const { isMobile, isTablet } = useBreakpoint();
   return (
@@ -606,7 +607,50 @@ function Events() {
           </p>
         </div>
 
-        {/* Featured event — DJ 1sak */}
+        {/* Evento más próximo — muestra de Caro Iturralde (13 ago) */}
+        <div ref={refM} className="reveal" style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
+          border: `1px solid ${C.borderHi}`,
+          overflow: "hidden", marginBottom: 3,
+        }}>
+          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
+            <Image
+              src="/events/caro_iturralde/EXPO_1080x1350.png"
+              alt="Las formas de lo invisible Vol 2: reflejo · Muestra de Caro Iturralde · 13 de Agosto"
+              fill style={{ objectFit: "contain" }}
+              sizes="(max-width:900px) 100vw, 60vw"
+            />
+          </div>
+          <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <span style={{ display: "inline-block", backgroundColor: C.gold, color: C.black, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
+              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(26px,2.7vw,38px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>LAS FORMAS DE LO INVISIBLE<br /><span style={{ fontSize: "0.5em", color: C.gold, fontWeight: 700, letterSpacing: "0.06em" }}>Vol 2 : reflejo</span></h3>
+              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Una muestra de Caro Iturralde</p>
+              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
+              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Muestra de arte en el Distrito Creativo.<br />Puertas desde las 5:00 pm · Presentación 7:00 pm</p>
+            </div>
+            <div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
+                {[["Fecha","Jue 13 de Agosto"],["Hora","5:00 pm"],["Lugar","BASE · Quito"]].map(([k,v]) => (
+                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
+                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <GoldBtn
+                  href={`${WA_BASE}?text=${encodeURIComponent("Hola! Me interesa la muestra \"Las formas de lo invisible Vol 2: reflejo\" de Caro Iturralde del jueves 13 de agosto en BASE. ¿Pueden darme más información?")}`}
+                  target="_blank"
+                >Más info →</GoldBtn>
+                <GoldBtn href="#ubicacion" outline>Cómo llegar</GoldBtn>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Evento — DJ 1sak */}
         <div ref={refC} className="reveal" style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
@@ -627,7 +671,7 @@ function Events() {
             display: "flex", flexDirection: "column", justifyContent: "space-between",
           }}>
             <div>
-              <span style={{ display: "inline-block", backgroundColor: C.gold, color: C.black, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
+              <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
               <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(28px,2.9vw,42px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>DJ 1SAK</h3>
               <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Desde México · LNG/SHT · Galaxia Cero</p>
               <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />

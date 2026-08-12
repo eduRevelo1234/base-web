@@ -24,7 +24,7 @@ const SITE = "https://soylabase.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
-  title: "BASE — Música & Cultura | Venue en Quito",
+  title: "Base - Distrito Creativo | Venue en Quito",
   description:
     "Venue para conciertos, eventos corporativos, privados y fiestas en Quito. Capacidad para +300 personas. Próximos eventos y reservas.",
   keywords: [
