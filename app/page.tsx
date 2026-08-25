@@ -3,6 +3,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import emailjs from "@emailjs/browser";
+import { DIRECCION, NAV } from "./venue";
 
 const MapEmbed = dynamic(() => import("./MapEmbed"), { ssr: false });
 
@@ -376,13 +377,14 @@ function Hero() {
     }}>
       {/* Venue photography — the brandbook calls for warm low-light imagery,
           and the hero was previously flat black. */}
-      <Image
+        <Image
         src="/fotos_base/DSC06294.JPG"
         alt=""
         aria-hidden
         fill
-        priority
+          priority
         sizes="100vw"
+        className="hero-parallax"
         style={{
           objectFit: "cover",
           objectPosition: "68% 78%",
@@ -443,7 +445,7 @@ function Hero() {
           UN ESPACIO.<br />
           <span style={{ color: C.gold }}>TODAS</span> LAS<br />
           EXPERIENCIAS.
-        </h1>
+          </h1>
 
         {/* Tagline */}
         <p style={{
@@ -529,7 +531,7 @@ function Marquee() {
 }
 
 /* ════════════════════════════ EVENTS ════════════════════════════ */
-const CLASICOS_START = new Date("2026-08-29T20:00:00-05:00").getTime();
+const CLASICOS_START = new Date("2026-08-28T20:00:00-05:00").getTime();
 
 function ClasicosCountdown() {
   const t = useCountdown(CLASICOS_START);
@@ -570,6 +572,7 @@ function ClasicosCountdown() {
 }
 
 const EVENTOS_PASADOS: [string, string][] = [
+  ["DJ 1SAK · Desde México",               "15 Ago 2026"],
   ["Jony Beltrán & Serko Fu",              "6 Ago 2026"],
   ["Cumbia Sin Fronteras · La Bochinchera", "1 Ago 2026"],
   ["GIANNY EN VIVO · Promotor Mad Max",     "31 Jul 2026"],
@@ -578,10 +581,11 @@ const EVENTOS_PASADOS: [string, string][] = [
 
 function Events() {
   const refH = useReveal(0);
-  const refC = useReveal(120);
   const refB = useReveal(80);
   const refA = useReveal(80);
   const refM = useReveal(100);
+  const refT = useReveal(90);
+  const refCe = useReveal(90);
   const [showPast, setShowPast] = useState(false);
   const { isMobile, isTablet } = useBreakpoint();
   return (
@@ -594,7 +598,7 @@ function Events() {
         }}>
           <div>
             <Label>Agenda</Label>
-            <h2 style={{
+            <h2 className="headline-rise" style={{
               fontFamily: H, fontWeight: 900,
               fontSize: "clamp(34px,4.8vw,60px)",
               lineHeight: 0.95, textTransform: "uppercase", color: C.cream,
@@ -607,7 +611,7 @@ function Events() {
           </p>
         </div>
 
-        {/* Evento más próximo — muestra de Caro Iturralde (13 ago) */}
+        {/* En exhibición — muestra de Caro Iturralde (todo agosto) */}
         <div ref={refM} className="reveal" style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
@@ -617,22 +621,22 @@ function Events() {
           <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
             <Image
               src="/events/caro_iturralde/EXPO_1080x1350.png"
-              alt="Las formas de lo invisible Vol 2: reflejo · Muestra de Caro Iturralde · 13 de Agosto"
+              alt="Las formas de lo invisible Vol 2: reflejo · Muestra de Caro Iturralde · Todo agosto"
               fill style={{ objectFit: "contain" }}
               sizes="(max-width:900px) 100vw, 60vw"
             />
           </div>
           <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <div>
-              <span style={{ display: "inline-block", backgroundColor: C.gold, color: C.black, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
+              <span style={{ display: "inline-block", backgroundColor: C.gold, color: C.black, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>En exhibición</span>
               <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(26px,2.7vw,38px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>LAS FORMAS DE LO INVISIBLE<br /><span style={{ fontSize: "0.5em", color: C.gold, fontWeight: 700, letterSpacing: "0.06em" }}>Vol 2 : reflejo</span></h3>
               <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Una muestra de Caro Iturralde</p>
               <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
-              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Muestra de arte en el Distrito Creativo.<br />Puertas desde las 5:00 pm · Presentación 7:00 pm</p>
+              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Muestra de arte abierta durante todo agosto.<br />Puertas desde las 5:00 pm</p>
             </div>
             <div>
               <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
-                {[["Fecha","Jue 13 de Agosto"],["Hora","5:00 pm"],["Lugar","BASE · Quito"]].map(([k,v]) => (
+                {[["Fechas","Todo agosto"],["Hora","Desde 5:00 pm"],["Lugar","BASE · Quito"]].map(([k,v]) => (
                   <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
                     <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
                     <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
@@ -641,54 +645,10 @@ function Events() {
               </div>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 <GoldBtn
-                  href={`${WA_BASE}?text=${encodeURIComponent("Hola! Me interesa la muestra \"Las formas de lo invisible Vol 2: reflejo\" de Caro Iturralde del jueves 13 de agosto en BASE. ¿Pueden darme más información?")}`}
+                  href={`${WA_BASE}?text=${encodeURIComponent("Hola! Me interesa la muestra \"Las formas de lo invisible Vol 2: reflejo\" de Caro Iturralde, en exhibición durante agosto en BASE. ¿Pueden darme más información?")}`}
                   target="_blank"
                 >Más info →</GoldBtn>
                 <GoldBtn href="#ubicacion" outline>Cómo llegar</GoldBtn>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Evento — DJ 1sak */}
-        <div ref={refC} className="reveal" style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
-          border: `1px solid ${C.borderHi}`,
-          overflow: "hidden", marginBottom: 3,
-        }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
-            <Image
-              src="/events/dj1sak_Quito/djisak_1080X1350.png"
-              alt="DJ 1sak · 15 de Agosto"
-              fill style={{ objectFit: "contain" }}
-              sizes="(max-width:900px) 100vw, 60vw"
-            />
-          </div>
-          <div style={{
-            backgroundColor: C.blackCard,
-            padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px",
-            display: "flex", flexDirection: "column", justifyContent: "space-between",
-          }}>
-            <div>
-              <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
-              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(28px,2.9vw,42px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>DJ 1SAK</h3>
-              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Desde México · LNG/SHT · Galaxia Cero</p>
-              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
-              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Entrada gratuita · Venta de merch oficial LNG/SHT</p>
-            </div>
-            <div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
-                {[["Fecha","Sáb 15 de Agosto"],["Lugar","BASE · Quito"]].map(([k,v]) => (
-                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
-                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <GoldBtn onClick={() => openReservas("dj1sak")}>Reservar mi lugar →</GoldBtn>
-                <GoldBtn href={WA_URL} target="_blank" outline>Más info</GoldBtn>
               </div>
             </div>
           </div>
@@ -704,7 +664,7 @@ function Events() {
           <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
             <Image
               src="/events/ClasicosVSCumbia/flyer-short.png"
-              alt="Clásicos VS Cumbia · 29 de Agosto"
+              alt="Clásicos VS Cumbia · 28 de Agosto"
               fill style={{ objectFit: "contain" }}
               sizes="(max-width:900px) 100vw, 60vw"
             />
@@ -720,7 +680,7 @@ function Events() {
               {/* Countdown */}
               <ClasicosCountdown />
               <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 24, marginBottom: 32 }}>
-                {[["Fecha","Sáb 29 de Agosto"],["Hora","8:00 pm"],["Lugar","BASE · Quito"]].map(([k,v]) => (
+                {[["Fecha","Vie 28 de Agosto"],["Hora","8:00 pm"],["Lugar","BASE · Quito"]].map(([k,v]) => (
                   <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
                     <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
                     <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
@@ -730,9 +690,52 @@ function Events() {
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 <GoldBtn onClick={() => openReservas("clasicos")}>Reservar mi lugar →</GoldBtn>
                 <GoldBtn
-                  href={`https://wa.me/593996242174?text=${encodeURIComponent("Hola! Me interesa el evento Clásicos VS Cumbia del 29 de Agosto en BASE. ¿Pueden darme más información sobre preventa y reservas?")}`}
+                  href={`https://wa.me/593996242174?text=${encodeURIComponent("Hola! Me interesa el evento Clásicos VS Cumbia del 28 de Agosto en BASE. ¿Pueden darme más información sobre preventa y reservas?")}`}
                   target="_blank" outline
                 >Más info</GoldBtn>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Evento — Sitio Negro · Festival Internacional de Trap (29 ago) */}
+        <div ref={refT} className="reveal" style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
+          border: `1px solid ${C.borderHi}`,
+          overflow: "hidden", marginBottom: 3,
+        }}>
+          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
+            <Image
+              src="/events/Festival_internacional_trap/Festival_internacional_trap.jpeg"
+              alt="Sitio Negro · Festival Internacional de Trap · 29 de Agosto"
+              fill style={{ objectFit: "contain" }}
+              sizes="(max-width:900px) 100vw, 60vw"
+            />
+          </div>
+          <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
+              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(26px,2.7vw,38px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>SITIO NEGRO<br /><span style={{ fontSize: "0.5em", color: C.gold, fontWeight: 700, letterSpacing: "0.06em" }}>Festival Internacional de Trap</span></h3>
+              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Bang Versus DMG · Hans HS · Tiwinza · Kamiyada+ · Ace Shadows · Lil Jxta</p>
+              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
+              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Artistas de Ecuador, Estados Unidos y México.<br />Junto a La Mansión.</p>
+            </div>
+            <div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
+                {[["Fecha","Sáb 29 de Agosto"],["Lugar","BASE · Quito"]].map(([k,v]) => (
+                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
+                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <GoldBtn
+                  href={`${WA_BASE}?text=${encodeURIComponent("Hola! Me interesa Sitio Negro, el Festival Internacional de Trap del sábado 29 de agosto en BASE. ¿Pueden darme más información?")}`}
+                  target="_blank"
+                >Más info →</GoldBtn>
+                <GoldBtn href="#ubicacion" outline>Cómo llegar</GoldBtn>
               </div>
             </div>
           </div>
@@ -775,6 +778,49 @@ function Events() {
                   href={`${WA_BASE}?text=${encodeURIComponent("Hola! Me interesa el evento Homer El Mero Mero (Resurrección Tour) del 4 de Septiembre en BASE. ¿Pueden darme más información?")}`}
                   target="_blank" outline
                 >Más info</GoldBtn>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Evento — Celeste (16 sep) */}
+        <div ref={refCe} className="reveal" style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
+          border: `1px solid ${C.borderHi}`,
+          overflow: "hidden", marginBottom: 3,
+        }}>
+          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
+            <Image
+              src="/events/celeste/celeste.jpeg"
+              alt="Celeste en Quito · 16 de Septiembre"
+              fill style={{ objectFit: "contain" }}
+              sizes="(max-width:900px) 100vw, 60vw"
+            />
+          </div>
+          <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
+              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(28px,2.9vw,42px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>CELESTE</h3>
+              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Quito · Ecuador</p>
+              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
+              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Banda invitada: Niphredil.</p>
+            </div>
+            <div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
+                {[["Fecha","Mié 16 de Septiembre"],["Lugar","BASE · Quito"]].map(([k,v]) => (
+                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
+                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <GoldBtn
+                  href={`${WA_BASE}?text=${encodeURIComponent("Hola! Me interesa el concierto de Celeste del miércoles 16 de septiembre en BASE. ¿Pueden darme más información?")}`}
+                  target="_blank"
+                >Más info →</GoldBtn>
+                <GoldBtn href="#ubicacion" outline>Cómo llegar</GoldBtn>
               </div>
             </div>
           </div>
@@ -874,17 +920,8 @@ function openReservas(eventoId?: string) {
 /* Upcoming events only — keep in sync with the cards in <Events />. */
 const EVENTOS_PROXIMOS = [
   {
-    id:    "dj1sak",
-    fecha: "Sáb 15 de Agosto",
-    hora:  "Puertas 8:00 pm",
-    name:  "DJ 1SAK",
-    desc:  "Desde México · LNG/SHT · Galaxia Cero",
-    badge: "Entrada gratuita",
-    badgeColor: C.gold,
-  },
-  {
     id:    "clasicos",
-    fecha: "Sáb 29 de Agosto",
+    fecha: "Vie 28 de Agosto",
     hora:  "8:00 pm",
     name:  "Clásicos VS Cumbia",
     desc:  "Back in Time vs Cumbia Capital",
@@ -1080,7 +1117,7 @@ function ReservasModal() {
               color: C.black, backgroundColor: C.gold,
               padding: "13px 32px",
             }}>Cerrar</button>
-          </div>
+        </div>
         ) : (
           <div style={{
             display: "grid",
@@ -1327,8 +1364,8 @@ function GalleryCard({
         transition: "border-color 0.25s",
         backgroundColor: contained ? C.ochre : C.blackCard,
       }}
-    >
-      <Image
+          >
+            <Image
         src={img.src} alt={img.alt} fill
         style={{
           objectFit: contained ? "contain" : "cover",
@@ -1400,9 +1437,9 @@ function Gallery() {
 
         <div ref={ref} className="reveal" style={{ marginBottom: isMobile ? 36 : 56 }}>
           <Label>Galería</Label>
-          <h2 style={{
-            fontFamily: H, fontWeight: 900,
-            fontSize: "clamp(34px,4.8vw,60px)", lineHeight: 0.95,
+          <h2 className="headline-rise" style={{
+              fontFamily: H, fontWeight: 900,
+              fontSize: "clamp(34px,4.8vw,60px)", lineHeight: 0.95,
             textTransform: "uppercase", color: C.cream,
           }}>
             EL ESPACIO<br /><span style={{ color: C.gold }}>EN ACCIÓN</span>
@@ -1559,7 +1596,7 @@ function Espacio() {
         }}>
           <div>
             <Label>El Espacio</Label>
-            <h2 style={{
+            <h2 className="headline-rise" style={{
               fontFamily: H, fontWeight: 900,
               fontSize: "clamp(34px,4.8vw,60px)", lineHeight: 0.95,
               textTransform: "uppercase", color: C.cream,
@@ -1714,7 +1751,7 @@ function Booking() {
           {/* Left */}
           <div>
             <Label>Reservas</Label>
-            <h2 style={{
+            <h2 className="headline-rise" style={{
               fontFamily: H, fontWeight: 900,
               fontSize: "clamp(34px,4.8vw,62px)", lineHeight: 0.95,
               textTransform: "uppercase", color: C.cream, marginBottom: 28,
@@ -1784,8 +1821,8 @@ function Booking() {
                 Escribir por WhatsApp
               </a>
               <GoldBtn href="#contacto" outline small>Formulario de contacto →</GoldBtn>
-            </div>
-          </div>
+        </div>
+    </div>
 
           {/* Right — CTA visual */}
           <div style={{
@@ -1916,7 +1953,7 @@ function Merch() {
                 padding: "4px 12px",
               }}>Próximamente</span>
             </div>
-            <h2 style={{
+            <h2 className="headline-rise" style={{
               fontFamily: H, fontWeight: 900,
               fontSize: "clamp(34px,4.8vw,60px)", lineHeight: 0.95,
               textTransform: "uppercase", color: C.cream,
@@ -1945,10 +1982,181 @@ function Merch() {
   );
 }
 
+/* ════════════════════════════ INSTAGRAM ════════════════════════════ */
+/* Sin backend (output:"export") el feed se pide desde el navegador.
+   NEXT_PUBLIC_IG_FEED_URL debe apuntar a un JSON con los posts (Behold,
+   EmbedSocial o similar). Si no está configurada, la rejilla cae a las
+   imágenes locales: la sección nunca se ve rota ni vacía. */
+const IG_USER = "soylabase";
+const IG_PROFILE = `https://www.instagram.com/${IG_USER}`;
+const IG_FEED_URL = process.env.NEXT_PUBLIC_IG_FEED_URL ?? "";
+
+type IgPost = { id: string; permalink: string; image: string; caption?: string };
+
+/* Respaldo curado: material propio que ya vive en /public */
+const IG_FALLBACK: IgPost[] = [
+  { id: "f1", permalink: IG_PROFILE, image: "/events/caro_iturralde/EXPO_1080x1350.png", caption: "Las formas de lo invisible · Caro Iturralde" },
+  { id: "f2", permalink: IG_PROFILE, image: "/events/dj1sak_Quito/djisak_1080X1350.png", caption: "DJ 1SAK desde México" },
+  { id: "f3", permalink: IG_PROFILE, image: "/events/ClasicosVSCumbia/flyer-1080x1350.png", caption: "Clásicos VS Cumbia" },
+  { id: "f4", permalink: IG_PROFILE, image: "/fotos_base/DSC06265.JPG", caption: "El pasillo de arcos" },
+  { id: "f5", permalink: IG_PROFILE, image: "/fotos_base/DSC06315.JPG", caption: "Mural de caligrafía" },
+  { id: "f6", permalink: IG_PROFILE, image: "/fotos_base/base_004.jpeg", caption: "La fachada" },
+];
+
+/* Tolera las formas más comunes de respuesta ({posts:[…]} o un array). */
+function parseIgFeed(data: unknown): IgPost[] {
+  const raw = Array.isArray(data)
+    ? data
+    : (data as { posts?: unknown[] })?.posts ?? [];
+  return (raw as Record<string, string>[])
+    .map((p, i) => ({
+      id: p.id ?? String(i),
+      permalink: p.permalink ?? IG_PROFILE,
+      image: p.thumbnailUrl || p.mediaUrl || p.image || "",
+      caption: p.caption ?? "",
+    }))
+    .filter((p) => p.image)
+    .slice(0, 6);
+}
+
+function InstagramFeed() {
+  const ref = useReveal(0);
+  const { isMobile, isTablet } = useBreakpoint();
+  const [posts, setPosts] = useState<IgPost[]>(IG_FALLBACK);
+  const [enVivo, setEnVivo] = useState(false);
+
+  useEffect(() => {
+    if (!IG_FEED_URL) return;
+    const ac = new AbortController();
+    (async () => {
+      try {
+        const r = await fetch(IG_FEED_URL, { signal: ac.signal });
+        if (!r.ok) return;
+        const parsed = parseIgFeed(await r.json());
+        if (parsed.length) { setPosts(parsed); setEnVivo(true); }
+      } catch {
+        /* Sin conexión o feed caído: se queda el respaldo ya renderizado */
+      }
+    })();
+    return () => ac.abort();
+  }, []);
+
+  return (
+    <section id="instagram" style={{ backgroundColor: C.blackSoft, padding: isMobile ? "64px 0" : isTablet ? "80px 0" : "100px 0" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0 20px" : isTablet ? "0 32px" : "0 40px" }}>
+        <div ref={ref} className="reveal" style={{
+          display: "flex", alignItems: "flex-end", justifyContent: "space-between",
+          marginBottom: isMobile ? 32 : 56, flexWrap: "wrap", gap: 20,
+        }}>
+          <div>
+            <Label>Comunidad</Label>
+            <h2 className="headline-rise" style={{
+              fontFamily: H, fontWeight: 900,
+              fontSize: "clamp(34px,4.8vw,60px)", lineHeight: 0.95,
+              textTransform: "uppercase", color: C.cream,
+            }}>
+              SÍGUENOS EN<br /><span style={{ color: C.gold }}>@{IG_USER}</span>
+            </h2>
+          </div>
+          <a href={IG_PROFILE} target="_blank" rel="noopener noreferrer" className="u-hover" style={{
+            fontFamily: H, fontWeight: 800, fontSize: 13, letterSpacing: "0.1em",
+            textTransform: "uppercase", color: C.gold, textDecoration: "none",
+            display: "inline-flex", alignItems: "center", gap: 10,
+          }}>
+            <IconInstagram size={18} color={C.gold} />
+            {enVivo ? "Ver perfil" : "Ver más en Instagram"} →
+          </a>
+        </div>
+
+        <div style={{
+          display: "grid",
+          /* 3×2 fijo: con auto-fit salían 5 columnas y la sexta quedaba
+             huérfana. Además es la retícula que la gente reconoce de IG. */
+          gridTemplateColumns: isMobile ? "repeat(2,1fr)" : "repeat(3,1fr)",
+          gap: 3,
+        }}>
+          {posts.map((p) => (
+            <a key={p.id} href={p.permalink} target="_blank" rel="noopener noreferrer"
+              className="ig-tile isotype-mask"
+              aria-label={p.caption || `Publicación de @${IG_USER}`}
+              style={{
+                position: "relative", aspectRatio: "1/1", display: "block",
+                overflow: "hidden", backgroundColor: C.blackCard,
+                border: `1px solid ${C.border}`, minWidth: 0,
+              }}>
+              <Image src={p.image} alt={p.caption || ""} fill
+                sizes="(max-width:640px) 50vw, 25vw"
+                style={{ objectFit: "cover" }} />
+              <span className="ig-tile-overlay">
+                <IconInstagram size={22} color={C.cream} />
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ════════════════════════════ NAV ACTIONS ════════════════════════════ */
+/* Antes había un solo enlace "Abrir en Maps" que dejaba un pin. Ahora se
+   traza la ruta y se ofrece la app que la persona realmente usa. */
+/* El user-agent no cambia nunca: se lee con useSyncExternalStore para no
+   provocar setState dentro de un efecto ni desajuste de hidratación. */
+const noopSubscribe = () => () => {};
+const readIsApple = () => /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
+
+function NavActions() {
+  const isApple = useSyncExternalStore(noopSubscribe, readIsApple, () => false);
+  const [copiado, setCopiado] = useState(false);
+
+  async function copiar() {
+    try {
+      await navigator.clipboard.writeText(DIRECCION);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    } catch {
+      /* Sin permiso de portapapeles: no rompemos nada, el texto ya está visible */
+    }
+  }
+
+  const btn: React.CSSProperties = {
+    display: "inline-flex", alignItems: "center", gap: 9,
+    fontFamily: H, fontWeight: 900, fontSize: 12,
+    letterSpacing: "0.12em", textTransform: "uppercase",
+    padding: "12px 20px", textDecoration: "none",
+    border: `1px solid ${C.ochreLine}`, cursor: "pointer",
+    backgroundColor: "transparent", color: C.cream,
+    transition: "border-color 0.2s, color 0.2s",
+  };
+
+  return (
+    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+      <a href={NAV.google} target="_blank" rel="noopener noreferrer"
+        style={{ ...btn, color: C.black, backgroundColor: C.gold, border: "none" }}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+        </svg>
+        Google Maps
+      </a>
+
+      <a href={NAV.waze} target="_blank" rel="noopener noreferrer" style={btn}>Waze</a>
+
+      {/* Solo en dispositivos Apple: en Android el enlace no abre nada */}
+      {isApple && (
+        <a href={NAV.apple} target="_blank" rel="noopener noreferrer" style={btn}>Apple Maps</a>
+      )}
+
+      <button type="button" onClick={copiar} style={btn} aria-live="polite">
+        {copiado ? "✓ Copiada" : "Copiar dirección"}
+      </button>
+    </div>
+  );
+}
+
 /* ════════════════════════════ LOCATION ════════════════════════════ */
 function Location() {
   const { isMobile, isTablet } = useBreakpoint();
-  const MAPS_LINK = "https://maps.app.goo.gl/vN5DfK8U481gjTvj8";
   const ref = useReveal(0);
 
   return (
@@ -1984,9 +2192,9 @@ function Location() {
           backgroundColor: C.blackSoft,
         }}>
           <Label>Ubicación</Label>
-          <h2 style={{
-            fontFamily: H, fontWeight: 900,
-            fontSize: "clamp(30px,3.6vw,52px)", lineHeight: 0.9,
+          <h2 className="headline-rise" style={{
+              fontFamily: H, fontWeight: 900,
+              fontSize: "clamp(30px,3.6vw,52px)", lineHeight: 0.9,
             textTransform: "uppercase", color: C.cream, marginBottom: 28,
           }}>
             CÓMO<br /><span style={{ color: C.gold }}>LLEGAR</span>
@@ -2025,21 +2233,7 @@ function Location() {
             ))}
           </div>
 
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <a href={MAPS_LINK} target="_blank" rel="noopener noreferrer"
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 10,
-                fontFamily: H, fontWeight: 900, fontSize: 13,
-                letterSpacing: "0.12em", textTransform: "uppercase",
-                color: C.black, backgroundColor: C.gold,
-                padding: "13px 28px", textDecoration: "none",
-              }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-              </svg>
-              Abrir en Maps
-            </a>
-          </div>
+          <NavActions />
         </div>
       </div>
       </div>
@@ -2093,7 +2287,7 @@ function Contact() {
         }}>
           <div>
             <Label>Contacto</Label>
-            <h2 style={{
+            <h2 className="headline-rise" style={{
               fontFamily: H, fontWeight: 900,
               fontSize: "clamp(34px,4.8vw,64px)", lineHeight: 0.95,
               textTransform: "uppercase", color: C.cream, marginBottom: 24,
@@ -2429,6 +2623,8 @@ export default function Page() {
   return (
     <>
       <Grain />
+      {/* Barra de progreso de lectura — CSS puro, scroll-driven */}
+      <div className="scroll-progress" aria-hidden />
       <ReservasModal />
       <WhatsAppBtn />
       <Navbar />
@@ -2443,6 +2639,7 @@ export default function Page() {
         <Events />
         <Booking />
         <Merch />
+        <InstagramFeed />
         <Location />
         <Contact />
       </main>

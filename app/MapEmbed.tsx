@@ -1,9 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-
-/* Coordenadas de BASE — Francisco Salazar y José Tamayo, Quito */
-const LAT = -0.21052;
-const LNG = -78.48420;
+import { LAT, LNG, NAV } from "./venue";
 
 export default function MapEmbed() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -52,13 +49,23 @@ export default function MapEmbed() {
         iconAnchor: [7, 7],
       });
 
-      L.marker([LAT, LNG], { icon })
+      /* Popup accionable: antes solo mostraba texto, ahora lleva a la ruta */
+      L.marker([LAT, LNG], { icon, keyboard: true, title: "BASE — cómo llegar" })
         .addTo(map)
         .bindPopup(
           `<b style="font-family:sans-serif;font-size:13px">BASE</b>
-           <br/><span style="font-size:11px;color:#888">Francisco Salazar y José Tamayo</span>`,
+           <br/><span style="font-size:11px;color:#888">Francisco Salazar y José Tamayo</span>
+           <br/><a href="${NAV.google}" target="_blank" rel="noopener noreferrer"
+              style="display:inline-block;margin-top:8px;font-family:sans-serif;font-size:11px;
+                     font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+                     color:#111;background:#df9f00;padding:6px 12px;text-decoration:none;">
+              Cómo llegar →</a>`,
           { closeButton: false }
-        );
+        )
+        .openPopup();
+
+      /* Doble clic sobre el mapa: ruta directa */
+      map.on("dblclick", () => window.open(NAV.google, "_blank", "noopener"));
 
       /* Attribution mínimo */
       L.control.attribution({ prefix: false })
