@@ -531,47 +531,12 @@ function Marquee() {
 }
 
 /* ════════════════════════════ EVENTS ════════════════════════════ */
-const CLASICOS_START = new Date("2026-08-28T20:00:00-05:00").getTime();
-
-function ClasicosCountdown() {
-  const t = useCountdown(CLASICOS_START);
-  if (t?.over) return null;
-  // `null` on the server / first paint — same markup, placeholder digits.
-  const units = [
-    ["días", t?.d], ["hrs", t?.h], ["min", t?.m], ["seg", t?.s],
-  ] as const;
-  return (
-    <div style={{ marginBottom: 24 }}>
-      <p style={{
-        fontFamily: H, fontWeight: 700, fontSize: 9,
-        letterSpacing: "0.28em", textTransform: "uppercase",
-        color: C.gold, marginBottom: 10,
-      }}>Faltan</p>
-      <div style={{ display: "flex", gap: 8 }}>
-        {units.map(([lbl, val]) => (
-          <div key={lbl} style={{
-            flex: 1, backgroundColor: "rgba(193,133,0,0.10)",
-            border: `1px solid ${C.ochreLine}`,
-            padding: "10px 6px", textAlign: "center",
-          }}>
-            <div style={{
-              fontFamily: H, fontWeight: 900, fontSize: 28,
-              color: C.gold, lineHeight: 1,
-              fontVariantNumeric: "tabular-nums",
-            }}>{val === undefined ? "––" : String(val).padStart(2, "0")}</div>
-            <div style={{
-              fontFamily: H, fontWeight: 700, fontSize: 9,
-              letterSpacing: "0.18em", textTransform: "uppercase",
-              color: C.muted2, marginTop: 4,
-            }}>{lbl}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 const EVENTOS_PASADOS: [string, string][] = [
+  ["Celeste · Banda invitada: Niphredil",         "16 Sep 2026"],
+  ["Homer El Mero Mero · Resurrección Tour",      "4 Sep 2026"],
+  ["Sitio Negro · Festival Internacional de Trap", "29 Ago 2026"],
+  ["Clásicos VS Cumbia · Cumbia Capital",         "28 Ago 2026"],
+  ["Las formas de lo invisible · Caro Iturralde", "Ago 2026"],
   ["DJ 1SAK · Desde México",               "15 Ago 2026"],
   ["Jony Beltrán & Serko Fu",              "6 Ago 2026"],
   ["Cumbia Sin Fronteras · La Bochinchera", "1 Ago 2026"],
@@ -581,10 +546,6 @@ const EVENTOS_PASADOS: [string, string][] = [
 
 function Events() {
   const refH = useReveal(0);
-  const refB = useReveal(80);
-  const refA = useReveal(80);
-  const refM = useReveal(100);
-  const refT = useReveal(90);
   const refCe = useReveal(90);
   const [showPast, setShowPast] = useState(false);
   const { isMobile, isTablet } = useBreakpoint();
@@ -611,218 +572,26 @@ function Events() {
           </p>
         </div>
 
-        {/* En exhibición — muestra de Caro Iturralde (todo agosto) */}
-        <div ref={refM} className="reveal" style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
-          border: `1px solid ${C.borderHi}`,
-          overflow: "hidden", marginBottom: 3,
-        }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
-            <Image
-              src="/events/caro_iturralde/EXPO_1080x1350.png"
-              alt="Las formas de lo invisible Vol 2: reflejo · Muestra de Caro Iturralde · Todo agosto"
-              fill style={{ objectFit: "contain" }}
-              sizes="(max-width:900px) 100vw, 60vw"
-            />
-          </div>
-          <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-            <div>
-              <span style={{ display: "inline-block", backgroundColor: C.gold, color: C.black, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>En exhibición</span>
-              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(26px,2.7vw,38px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>LAS FORMAS DE LO INVISIBLE<br /><span style={{ fontSize: "0.5em", color: C.gold, fontWeight: 700, letterSpacing: "0.06em" }}>Vol 2 : reflejo</span></h3>
-              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Una muestra de Caro Iturralde</p>
-              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
-              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Muestra de arte abierta durante todo agosto.<br />Puertas desde las 5:00 pm</p>
-            </div>
-            <div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
-                {[["Fechas","Todo agosto"],["Hora","Desde 5:00 pm"],["Lugar","BASE · Quito"]].map(([k,v]) => (
-                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
-                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <GoldBtn
-                  href={`${WA_BASE}?text=${encodeURIComponent("Hola! Me interesa la muestra \"Las formas de lo invisible Vol 2: reflejo\" de Caro Iturralde, en exhibición durante agosto en BASE. ¿Pueden darme más información?")}`}
-                  target="_blank"
-                >Más info →</GoldBtn>
-                <GoldBtn href="#ubicacion" outline>Cómo llegar</GoldBtn>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Evento — Clásicos VS Cumbia */}
-        <div ref={refB} className="reveal" style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
-          border: `1px solid ${C.borderHi}`,
-          overflow: "hidden", marginBottom: 3,
-        }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
-            <Image
-              src="/events/ClasicosVSCumbia/flyer-short.png"
-              alt="Clásicos VS Cumbia · 28 de Agosto"
-              fill style={{ objectFit: "contain" }}
-              sizes="(max-width:900px) 100vw, 60vw"
-            />
-          </div>
-          <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-            <div>
-              <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
-              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(26px,2.7vw,38px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>CLÁSICOS VS CUMBIA<br /><span style={{ fontSize: "0.5em", color: C.gold, fontWeight: 700, letterSpacing: "0.06em" }}>· Promotor Cumbia Capital</span></h3>
-              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
-              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Dos estilos, una sola fiesta. Bebidas y picaditas.<br />Preventa $7 · En puerta $10</p>
-            </div>
-            <div>
-              {/* Countdown */}
-              <ClasicosCountdown />
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 24, marginBottom: 32 }}>
-                {[["Fecha","Vie 28 de Agosto"],["Hora","8:00 pm"],["Lugar","BASE · Quito"]].map(([k,v]) => (
-                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
-                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <GoldBtn onClick={() => openReservas("clasicos")}>Reservar mi lugar →</GoldBtn>
-                <GoldBtn
-                  href={`https://wa.me/593996242174?text=${encodeURIComponent("Hola! Me interesa el evento Clásicos VS Cumbia del 28 de Agosto en BASE. ¿Pueden darme más información sobre preventa y reservas?")}`}
-                  target="_blank" outline
-                >Más info</GoldBtn>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Evento — Sitio Negro · Festival Internacional de Trap (29 ago) */}
-        <div ref={refT} className="reveal" style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
-          border: `1px solid ${C.borderHi}`,
-          overflow: "hidden", marginBottom: 3,
-        }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
-            <Image
-              src="/events/Festival_internacional_trap/Festival_internacional_trap.jpeg"
-              alt="Sitio Negro · Festival Internacional de Trap · 29 de Agosto"
-              fill style={{ objectFit: "contain" }}
-              sizes="(max-width:900px) 100vw, 60vw"
-            />
-          </div>
-          <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-            <div>
-              <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
-              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(26px,2.7vw,38px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>SITIO NEGRO<br /><span style={{ fontSize: "0.5em", color: C.gold, fontWeight: 700, letterSpacing: "0.06em" }}>Festival Internacional de Trap</span></h3>
-              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Bang Versus DMG · Hans HS · Tiwinza · Kamiyada+ · Ace Shadows · Lil Jxta</p>
-              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
-              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Artistas de Ecuador, Estados Unidos y México.<br />Junto a La Mansión.</p>
-            </div>
-            <div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
-                {[["Fecha","Sáb 29 de Agosto"],["Lugar","BASE · Quito"]].map(([k,v]) => (
-                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
-                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <GoldBtn
-                  href={`${WA_BASE}?text=${encodeURIComponent("Hola! Me interesa Sitio Negro, el Festival Internacional de Trap del sábado 29 de agosto en BASE. ¿Pueden darme más información?")}`}
-                  target="_blank"
-                >Más info →</GoldBtn>
-                <GoldBtn href="#ubicacion" outline>Cómo llegar</GoldBtn>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Evento — Homer El Mero Mero (entradas externas, no reserva) */}
-        <div ref={refA} className="reveal" style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
-          border: `1px solid ${C.borderHi}`,
-          overflow: "hidden", marginBottom: 3,
-        }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
-            <Image
-              src="/events/Homer_El_Mero_Mero/IMG_0549.JPEG"
-              alt="Homer El Mero Mero · Resurrección Tour 2026 · 4 de Septiembre"
-              fill style={{ objectFit: "contain" }}
-              sizes="(max-width:900px) 100vw, 60vw"
-            />
-          </div>
-          <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-            <div>
-              <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
-              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(26px,2.7vw,38px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>HOMER EL MERO MERO<br /><span style={{ fontSize: "0.5em", color: C.gold, fontWeight: 700, letterSpacing: "0.06em" }}>· Resurrección Tour 2026</span></h3>
-              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
-              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Gira internacional en Quito.<br />Entradas en buenplan.com.ec</p>
-            </div>
-            <div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
-                {[["Fecha","Vie 4 de Septiembre"],["Lugar","BASE · Quito"]].map(([k,v]) => (
-                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
-                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <GoldBtn href="https://buenplan.com.ec" target="_blank">Comprar entradas →</GoldBtn>
-                <GoldBtn
-                  href={`${WA_BASE}?text=${encodeURIComponent("Hola! Me interesa el evento Homer El Mero Mero (Resurrección Tour) del 4 de Septiembre en BASE. ¿Pueden darme más información?")}`}
-                  target="_blank" outline
-                >Más info</GoldBtn>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Evento — Celeste (16 sep) */}
+        {/* Sin eventos confirmados — reemplazar por la tarjeta del próximo evento cuando se anuncie */}
         <div ref={refCe} className="reveal" style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "3fr 2fr",
           border: `1px solid ${C.borderHi}`,
-          overflow: "hidden", marginBottom: 3,
+          backgroundColor: C.blackCard,
+          padding: isMobile ? "36px 24px" : isTablet ? "44px 32px" : "56px 44px",
+          display: "flex", flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "flex-start" : "center",
+          justifyContent: "space-between", gap: 28, marginBottom: 3,
         }}>
-          <div style={{ position: "relative", minHeight: isMobile ? 300 : isTablet ? 400 : 480, backgroundColor: "#1a1a1a" }}>
-            <Image
-              src="/events/celeste/celeste.jpeg"
-              alt="Celeste en Quito · 16 de Septiembre"
-              fill style={{ objectFit: "contain" }}
-              sizes="(max-width:900px) 100vw, 60vw"
-            />
+          <div>
+            <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(24px,2.6vw,36px)", lineHeight: 0.95, textTransform: "uppercase", color: C.cream, marginBottom: 14 }}>
+              Nuevas fechas muy pronto
+            </h3>
+            <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted, maxWidth: 520 }}>
+              Estamos preparando la próxima agenda. ¿Quieres hacer tu evento en BASE? Escríbenos y te contamos disponibilidad.
+            </p>
           </div>
-          <div style={{ backgroundColor: C.blackCard, padding: isMobile ? "28px 24px" : isTablet ? "36px 32px" : "48px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-            <div>
-              <span style={{ display: "inline-block", backgroundColor: "transparent", border: `1px solid ${C.gold}`, color: C.gold, fontFamily: H, fontWeight: 800, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", padding: "5px 12px", marginBottom: 32 }}>Próximo evento</span>
-              <h3 style={{ fontFamily: H, fontWeight: 900, fontSize: "clamp(28px,2.9vw,42px)", lineHeight: 0.9, textTransform: "uppercase", color: C.cream, marginBottom: 12 }}>CELESTE</h3>
-              <p style={{ fontFamily: B, fontSize: 13, color: C.gold, letterSpacing: "0.06em", marginBottom: 20 }}>Quito · Ecuador</p>
-              <div style={{ width: 36, height: 2, backgroundColor: C.gold, marginBottom: 24 }} />
-              <p style={{ fontFamily: B, fontSize: 14, lineHeight: 1.75, color: C.muted }}>Banda invitada: Niphredil.</p>
-            </div>
-            <div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, borderTop: `1px solid ${C.border}`, paddingTop: 28, marginTop: 32, marginBottom: 32 }}>
-                {[["Fecha","Mié 16 de Septiembre"],["Lugar","BASE · Quito"]].map(([k,v]) => (
-                  <div key={k} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                    <span style={{ fontFamily: H, fontWeight: 700, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: C.muted, width: 52, flexShrink: 0, paddingTop: 3 }}>{k}</span>
-                    <span style={{ fontFamily: H, fontWeight: 900, fontSize: 17, textTransform: "uppercase", color: C.cream, lineHeight: 1.2 }}>{v}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <GoldBtn
-                  href={`${WA_BASE}?text=${encodeURIComponent("Hola! Me interesa el concierto de Celeste del miércoles 16 de septiembre en BASE. ¿Pueden darme más información?")}`}
-                  target="_blank"
-                >Más info →</GoldBtn>
-                <GoldBtn href="#ubicacion" outline>Cómo llegar</GoldBtn>
-              </div>
-            </div>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", flexShrink: 0 }}>
+            <GoldBtn href={`${WA_BASE}?text=${WA_MSG}`} target="_blank">Reservar el espacio →</GoldBtn>
+            <GoldBtn href="https://www.instagram.com/soylabase" target="_blank" outline>@soylabase</GoldBtn>
           </div>
         </div>
 
@@ -918,17 +687,11 @@ function openReservas(eventoId?: string) {
 
 /* ════════════════════════════ RESERVAS MODAL ════════════════════════════ */
 /* Upcoming events only — keep in sync with the cards in <Events />. */
-const EVENTOS_PROXIMOS = [
-  {
-    id:    "clasicos",
-    fecha: "Vie 28 de Agosto",
-    hora:  "8:00 pm",
-    name:  "Clásicos VS Cumbia",
-    desc:  "Back in Time vs Cumbia Capital",
-    badge: "Preventa $7",
-    badgeColor: C.ochre,
-  },
-];
+type EventoProximo = {
+  id: string; fecha: string; hora: string; name: string;
+  desc: string; badge: string; badgeColor: string;
+};
+const EVENTOS_PROXIMOS: EventoProximo[] = [];
 
 type FormState = {
   nombre: string;
@@ -1995,9 +1758,9 @@ type IgPost = { id: string; permalink: string; image: string; caption?: string }
 
 /* Respaldo curado: material propio que ya vive en /public */
 const IG_FALLBACK: IgPost[] = [
-  { id: "f1", permalink: IG_PROFILE, image: "/events/caro_iturralde/EXPO_1080x1350.png", caption: "Las formas de lo invisible · Caro Iturralde" },
-  { id: "f2", permalink: IG_PROFILE, image: "/events/dj1sak_Quito/djisak_1080X1350.png", caption: "DJ 1SAK desde México" },
-  { id: "f3", permalink: IG_PROFILE, image: "/events/ClasicosVSCumbia/flyer-1080x1350.png", caption: "Clásicos VS Cumbia" },
+  { id: "f1", permalink: IG_PROFILE, image: "/events/celeste/celeste.jpeg", caption: "Celeste · 16 de septiembre" },
+  { id: "f2", permalink: IG_PROFILE, image: "/events/Festival_internacional_trap/Festival_internacional_trap.jpeg", caption: "Sitio Negro · Festival Internacional de Trap" },
+  { id: "f3", permalink: IG_PROFILE, image: "/events/caro_iturralde/EXPO_1080x1350.png", caption: "Las formas de lo invisible · Caro Iturralde" },
   { id: "f4", permalink: IG_PROFILE, image: "/fotos_base/DSC06265.JPG", caption: "El pasillo de arcos" },
   { id: "f5", permalink: IG_PROFILE, image: "/fotos_base/DSC06315.JPG", caption: "Mural de caligrafía" },
   { id: "f6", permalink: IG_PROFILE, image: "/fotos_base/base_004.jpeg", caption: "La fachada" },
